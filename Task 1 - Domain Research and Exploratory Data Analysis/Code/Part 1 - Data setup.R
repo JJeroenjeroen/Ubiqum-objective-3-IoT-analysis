@@ -36,9 +36,9 @@ dbListFields(con,'yr_2006')
 
 
 #Save the datasets from server 
-yr_2007_test <- dbGetQuery(con, "SELECT Date, Time, Sub_metering_1, Sub_metering_2, Sub_metering_3 FROM yr_2007")
-yr_2008_test <- dbGetQuery(con, "SELECT Date, Time, Sub_metering_1, Sub_metering_2, Sub_metering_3 FROM yr_2008")
-yr_2009_test <- dbGetQuery(con, "SELECT Date, Time, Sub_metering_1, Sub_metering_2, Sub_metering_3 FROM yr_2009")
+yr_2007_test <- dbGetQuery(con, "SELECT Date, Time, Global_active_power, Sub_metering_1, Sub_metering_2, Sub_metering_3 FROM yr_2007")
+yr_2008_test <- dbGetQuery(con, "SELECT Date, Time, Global_active_power, Sub_metering_1, Sub_metering_2, Sub_metering_3 FROM yr_2008")
+yr_2009_test <- dbGetQuery(con, "SELECT Date, Time, Global_active_power, Sub_metering_1, Sub_metering_2, Sub_metering_3 FROM yr_2009")
 
 # Combine tables into one dataframe using dplyr
 Full_dataset <- bind_rows(yr_2007_test, yr_2008_test, yr_2009_test)
@@ -97,6 +97,14 @@ Full_dataset <- Full_dataset %>%
                     Weekday ==  "zondag", "Weekend", "Weekday"))
 
 
+#Generate a variable for energy used not measured in the current sub meters (in watt hour) 
+Full_dataset <- Full_dataset %>% mutate(
+  Sub_metering_4 = Global_active_power*(1000/60) - 
+    Sub_metering_1 - 
+    Sub_metering_2 - 
+    Sub_metering_3)
+
+
 
 
 #Order dataset correctly and remove values from 2010 
@@ -134,7 +142,7 @@ Full_dataset$Quarter <- factor(Full_dataset$Quarter,
 
 
 #Months
-Full_dataset$Month <- factor(Full_dataset$Month,
+Full_dataset$Month_string <- factor(Full_dataset$Month,
                             levels = c(1:12),
                             labels = c("January",
                                        "February",
@@ -186,3 +194,5 @@ ggplot(Sample_dataset, aes(x = Total_Energy_cons)) + geom_histogram()
 
 
 summary(Full_dataset)
+
+tail(yr_2009_test)

@@ -6,43 +6,68 @@
 #####################################################
 
 #Use Dplyr to filter and select the data
-#########################################
 
 
-#filter data to get rid of 0/1/2 energy consumption data:
+#################################################
+#group by various time periods and give averages#
+#################################################
 
-Sample_dataset_filtered <- filter(Sample_dataset, Total_Energy_cons > 30, Total_Energy_cons < 60)
-ggplot(Sample_dataset_filtered, aes(x = Total_Energy_cons)) + geom_density()
-
-
-#Average energy consumptions per month:
-#####
-#Total
+#Total per weekday
 Sample_dataset %>% 
-  group_by(Month, Weekday) %>%
-  summarise(avg_energy_cons = mean(Total_Energy_cons, na.rm = TRUE))
+  group_by(Weekday) %>%
+  summarise(avg_energy_cons = mean(Global_active_power, na.rm = TRUE))
 
 
-#Submeter 1
+#Submeter 1 per month
 Sample_dataset %>% 
   group_by(Month) %>%
   summarise(avg_energy_sub1 = mean(Sub_metering_1, na.rm = TRUE))
 
 
-#Submeter 2
+#Submeter 2 per month
 Sample_dataset %>% 
   group_by(Month) %>%
   summarise(avg_energy_sub2 = mean(Sub_metering_2, na.rm = TRUE))
 
-#Submeter 3
+#Submeter 3 per month
 Sample_dataset %>% 
   group_by(Month) %>%
   summarise(avg_energy_sub3 = mean(Sub_metering_3, na.rm = TRUE))
 
 
 
-#Total
-Sample_dataset %>% 
-  group_by(Daytime) %>%
-  summarise(avg_energy_cons = mean(Total_Energy_cons, na.rm = TRUE))
+
+##############
+#yearly stats#
+##############
+
+#give the max energy used on a given time by sub_meter_3 for 2007 & 2008
+Full_dataset %>% 
+  filter(DateTime > "2007-01-01" & DateTime < "2007-12-31") %>%
+  summarise(max_energy_2007 = max(Sub_metering_3))
+
+Full_dataset %>% 
+  filter(DateTime > "2008-01-01" & DateTime < "2008-12-31") %>%
+  summarise(max_energy_2008 = max(Sub_metering_3))
+
+
+
+
+#########
+#ggplots#
+#########
+
+#create a plot for yearly energy use
+data_1_year <- Full_dataset %>% 
+  filter(DateTime > "2007-01-06" & DateTime < "2007-12-07")
+
+
+ggplot(data_1_day, aes(x = DateTime, y = Global_active_power)) + geom_smooth()
+
+
+#create a plot for daily energy use
+data_1_day <- Full_dataset %>% 
+  filter(DateTime > "2007-11-11" & DateTime < "2007-11-12")
+
+ggplot(data_1_day, aes(x = DateTime, y = Sub_metering_3)) + geom_line()
 
