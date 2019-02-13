@@ -29,32 +29,18 @@ sub_meter3_on <- function(){
   
   
   #filter the full dataset to get the specific time period the person calling for the function wanted  
-  func1_heater <- Full_dataset %>% 
+  #filter for 1 day and use that dataset for further filtering to save calculation time
+  
+  func1_dataset <- Full_dataset %>% 
     filter(Year == func1_year,
-           Month == func1_month,
-           Day == func1_day,
-           Hour ==  func1_hrs,
-           Minute == func1_mins)
+    Month == func1_month,
+    Day == func1_day)
   
-  
-  #for air conditioner the time must be taken a bit more broad because when its on it can have 0 kWh on a specific moment but not averaged 
- 
+  #If both items are on, we need a broader range of minutes to test since we need to find some of the maximums
   ###Note: the way it currently works, issues arise when minute is 00 or minute is 59 is entered. 
-      ### I still need to find out how to get around this
+  ### I still need to find out how to get around this
   
-  func1_airco <- Full_dataset %>% 
-    filter(Year == func1_year,
-           Month == func1_month,
-           Day == func1_day,
-           Hour ==  func1_hrs,
-           Minute > (func1_mins - 5),
-           Minute < (func1_mins + 5))
-  
-  
-  
-  #If both items are on, we need a broader range to test since we need to find some of the maximums
-  
-  func1_both <- Full_dataset %>% 
+  func1_both <- func1_dataset %>% 
     filter(Year == func1_year,
            Month == func1_month,
            Day == func1_day,
@@ -64,6 +50,28 @@ sub_meter3_on <- function(){
   
   
   
+  #For the following filters I use the previously filtered dataset intead of the full set to save calculation time
+  func1_heater <- func1_both %>% 
+    filter(Year == func1_year,
+           Month == func1_month,
+           Day == func1_day,
+           Hour ==  func1_hrs,
+           Minute == func1_mins)
+  
+  
+  #for air conditioner the time must be taken a bit more broad because when its on it can have 0 kWh on a specific moment and be on
+ 
+   
+  func1_airco <- func1_both %>% 
+    filter(Year == func1_year,
+           Month == func1_month,
+           Day == func1_day,
+           Hour ==  func1_hrs,
+           Minute > (func1_mins - 5),
+           Minute < (func1_mins + 5))
+  
+  
+    
   #provide condition whether sub_meter3 gives indication that the water heater is on
   
   if(func1_heater$Sub_metering_3 > 15){
@@ -96,14 +104,13 @@ sub_meter3_on <- function(){
   }
   
   
-  #list both results in a list so it can be returned
+  func1_plot <- ggplot(func1_dataset, aes(x = DateTime, y = Sub_metering_3)) + geom_line()
   
-  sub_meter_3_result <- list(Water_heater, airco)
+#list both results in a list so it can be returned
+  
+  sub_meter_3_result <- list(func1_plot, Water_heater, airco)
   
   return(sub_meter_3_result)
   
 }
-
-sub_meter3_on()
-2009
 
