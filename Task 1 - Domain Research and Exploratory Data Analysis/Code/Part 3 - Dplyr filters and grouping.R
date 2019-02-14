@@ -62,14 +62,47 @@ data_1_year <- Full_dataset %>%
   filter(DateTime > "2007-01-06" & DateTime < "2007-12-07")
 
 
-ggplot(data_1_day, aes(x = DateTime, y = Global_active_power)) + geom_smooth()
+ggplot(data_1_year, aes(x = DateTime, y = Global_active_power)) + geom_smooth()
 
 
-#create a plot for daily energy use
+#create a plot for daily use of the water heater
 data_1_day <- Full_dataset %>% 
-  filter(DateTime > "2007-11-11" & DateTime < "2007-11-12")
+  filter(DateTime > "2007-11-13" & DateTime < "2007-11-14")
 
-ggplot(data_1_day, aes(x = DateTime, y = Sub_metering_3)) + geom_line()
+ggplot(data_1_day, aes(x = DateTime, y = Sub_metering_3)) + 
+  geom_line(size = 0.1, color = "tomato") +  
+  theme_classic() +
+    labs(x = "Day", y = "kWh",
+       title = "Water heater kWh stats",
+       subtitle = "A day where only the water heater was used")
+
+
+#create a plot for daily use of the airconditioner
+
+data_2_day <- Full_dataset %>% 
+  filter(DateTime > "2008-08-06" & DateTime < "2008-08-07")
+
+ggplot(data_2_day, aes(x = DateTime, y = Sub_metering_3)) + 
+  geom_line(size = 0.1, color = "orange") +  
+  theme_classic() +
+  labs(x = "Day", y = "kWh",
+       title = "Air conditioner kWh stats",
+       subtitle = "A day where only the Airconditioner was used")
+
+
+#create a plot where both items were used
+
+data_3_day <- Full_dataset %>% 
+  filter(DateTime > "2009-09-06" & DateTime < "2009-09-07")
+
+ggplot(data_3_day, aes(x = DateTime, y = Sub_metering_3)) + 
+  geom_line(size = 0.1, color = "blue") +  
+  theme_classic() +
+  labs(x = "Day", y = "kWh",
+       title = "total kWh stats",
+       subtitle = "A day where both items were used")
+
+
 
 
 #summarize monthly weather statistics and plot
@@ -84,6 +117,10 @@ weather_electricity <- Full_dataset %>%
             avg_sub_2 = mean(Sub_metering_2, na.rm = TRUE),
             avg_sub_3 = mean(Sub_metering_3, na.rm = TRUE))
 
+
+
+## Add a column indicating whether it is summer or winter
+weather_electricity <- weather_electricity %>% mutate( Season = ifelse( Month >3 & Month < 10, "Summer", "Winter" ) )
 
 #plot monthly avg temperature monthly energy use on 1 plot  
 
@@ -104,25 +141,85 @@ weather_electricity$Month <- factor(weather_electricity$Month,
 
 
 
+##plot barchart with average electricity used
+
 ggplot(weather_electricity) + 
   geom_col(mapping =
              aes(x = Month,
                  y = avg_temperature,
-                 fill = "Avg temperature"),
+                 fill = "Average temperature in Celsius"),
            size = 1.2,
-           alpha = 0.5) +
-  scale_fill_manual(values=c("orange")) +
+           alpha = 0.6) +
+  scale_fill_manual(values=c("grey")) + 
+  
   geom_line(mapping =
               aes(x = Month,
                   y = (avg_electricity * max(weather_electricity$avg_temperature)*0.5),
-                  colour = "Avg electricity used",
+                  colour = "Avg electricity used in Kilowatt",
                   group = 1),
-            size = 1.5,
+            size = 1,
             alpha = 1) +
-  scale_color_manual(values=c("black")) + 
+  
+  scale_color_manual(values=c("red")) + 
   scale_y_continuous( sec.axis = sec_axis(name = "Global minute-averaged active power (in kilowatt)", ~./max(weather_electricity$avg_temperature)*2)) +
   theme_classic() +
+  
   labs(x = "Month", y = "Celsius",
     title = "Temperature & Electricity",
         subtitle = "A negative correlation")
+
+
+
+#Hline giving mean electicity usage in summer months
+#######################
+
+ggplot(weather_electricity) + 
+  geom_col(mapping =
+             aes(x = Month,
+                 y = avg_temperature,
+                 fill = Season),
+           size = 1.2,
+           alpha = 0.6) +
+  
+  scale_fill_manual(values=c("Summer" = "orange", "Winter" = "grey")) +
+  
+
+  geom_hline(yintercept = mean(
+    weather_electricity$avg_electricity[weather_electricity$Season == "Summer"] * max(weather_electricity$avg_temperature)*0.5),
+    color= "red") +
+  
+  scale_y_continuous( sec.axis = sec_axis(name = "Global minute-averaged active power (in kilowatt)", ~./max(weather_electricity$avg_temperature)*2)) +
+  
+  theme_classic() +
+  
+  labs(x = "Month", y = "Celsius",
+       title = "Temperature & Electricity",
+       subtitle = "Low mean during summer months")
+
+
+
+#Hline giving mean electicity usage in winter months
+#######################
+
+ggplot(weather_electricity) + 
+  
+  geom_col(mapping =
+             aes(x = Month,
+                 y = avg_temperature,
+                 fill = Season),
+           size = 1.2,
+           alpha = 0.6) +
+  
+  scale_fill_manual(values=c("Summer" = "grey", "Winter" = "blue")) +
+ 
+  geom_hline(yintercept = mean(weather_electricity$avg_electricity[weather_electricity$Season == "Winter"] * max(weather_electricity$avg_temperature)*0.5), color= "Blue") +
+  
+  scale_y_continuous( sec.axis = sec_axis(name = "Global minute-averaged active power (in kilowatt)", ~./max(weather_electricity$avg_temperature)*2)) +
+  
+  theme_classic() +
+  
+  labs(x = "Month", y = "Celsius",
+       title = "Temperature & Electricity",
+       subtitle = "High mean during winter months")
+
 
