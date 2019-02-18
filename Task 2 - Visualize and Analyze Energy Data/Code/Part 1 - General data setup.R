@@ -18,8 +18,8 @@ if(!require(pacman))install.packages("pacman")
 
 
 pacman::p_load('dplyr', 'bbplot', 'lubridate', 'RMySQL', 'tidyr',
-               'gapminder', 'readr', 'ggplot2', 'forecast',
-               'ggfortify','forcats', 'R.utils', 'plotly', 'png', 
+               'gapminder', 'readr', 'ggplot2',
+               'forcats', 'R.utils', 'png', 
                'grid', 'ggpubr', 'scales')
                
 
@@ -40,12 +40,9 @@ dbListFields(con,'yr_2006')
 yr_2007_test <- dbGetQuery(con, "SELECT Date, Time, Global_active_power, Sub_metering_1, Sub_metering_2, Sub_metering_3 FROM yr_2007")
 yr_2008_test <- dbGetQuery(con, "SELECT Date, Time, Global_active_power, Sub_metering_1, Sub_metering_2, Sub_metering_3 FROM yr_2008")
 yr_2009_test <- dbGetQuery(con, "SELECT Date, Time, Global_active_power, Sub_metering_1, Sub_metering_2, Sub_metering_3 FROM yr_2009")
-yr_2010_test <- dbGetQuery(con, "SELECT Date, Time, Global_active_power, Sub_metering_1, Sub_metering_2, Sub_metering_3 FROM yr_2009")
-
-
 
 # Combine tables into one dataframe using dplyr
-Full_dataset <- bind_rows(yr_2007_test, yr_2008_test, yr_2009_test, yr_2010_test)
+Full_dataset <- bind_rows(yr_2007_test, yr_2008_test, yr_2009_test)
 
 # Combine Date and Time attribute values in a new attribute column
 Full_dataset <- cbind(Full_dataset, "DateTime" =
