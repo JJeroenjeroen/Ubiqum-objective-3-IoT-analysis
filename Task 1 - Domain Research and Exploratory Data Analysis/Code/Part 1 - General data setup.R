@@ -19,8 +19,7 @@ if(!require(pacman))install.packages("pacman")
 
 pacman::p_load('dplyr', 'bbplot', 'lubridate', 'RMySQL', 'tidyr',
                'gapminder', 'readr', 'ggplot2', 'forecast',
-               'ggfortify','forcats', 'R.utils', 'plotly', 'png', 
-               'grid', 'ggpubr', 'scales')
+               'ggfortify','forcats', 'R.utils', 'plotly', 'prophet')
                
 
 # Create a database connection
