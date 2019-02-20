@@ -9,11 +9,15 @@
 #Time Series Setup: Adding averages for each sub-meter
 ###############################################
 
-
 #make dataframe for daily average global active power used 
-df_daily_GAP <- Full_dataset %>% group_by(YYMMDD) %>% summarise(y = mean(Global_active_power))
-df_daily_GAP <- df_daily_GAP %>% select(ds = YYMMDD, y = y)
+df_daily_GAP <- Full_dataset %>% group_by(YYMMDD) %>% summarise(y = mean(Global_active_power), 
+                                                                temperature = mean((Maximum.temperature.Celsius+Minimum.temperature..Celsius)/2),
+                                                                rainfall = mean(Precipitation.amount.in.mm))
+
+df_daily_GAP <- df_daily_GAP %>% select(ds = YYMMDD, y = y, temperature = temperature, rainfall = rainfall)
 df_daily_GAP$ds <- date(df_daily_GAP$ds)
+df_daily_GAP <- df_daily_GAP %>% filter(!ds >= "2010-01-01")
+
 
 #remove days where family not at home in august 2008
 

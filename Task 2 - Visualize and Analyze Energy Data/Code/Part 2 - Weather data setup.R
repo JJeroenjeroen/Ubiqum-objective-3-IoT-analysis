@@ -26,6 +26,7 @@ Full_dataset <- left_join(Full_dataset, weather_data %>%
                                    Precipitation.amount.in.mm),
                           by = "YYMMDD")
 
+weather_data$ds <- date(weather_data$YYMMDD)
 
 #Create smaller set for faster calculations
 Sample_dataset <- sample_n(Full_dataset, 30000)
