@@ -16,7 +16,7 @@ df_daily_GAP <- Full_dataset %>% group_by(YYMMDD) %>% summarise(y = mean(Global_
 
 df_daily_GAP <- df_daily_GAP %>% select(ds = YYMMDD, y = y, temperature = temperature, rainfall = rainfall)
 df_daily_GAP$ds <- date(df_daily_GAP$ds)
-df_daily_GAP <- df_daily_GAP %>% filter(!ds >= "2010-01-01")
+
 
 
 #remove days where family not at home in august 2008
@@ -46,7 +46,7 @@ outliers_GAP_2009_2 <- boxplot(outliers_GAP_2009$y ~ outliers_GAP_2009$Month, ma
 outliers_GAP_2009[which(outliers_GAP_2009$y %in% outliers_GAP_2009_2),] <- NA
 
 
-#remove outliers for 2009
+#remove outliers for 2010
 outliers_GAP_2010 <- df_daily_GAP %>% filter(Year == 2010) 
 outliers_GAP_2010_2 <- boxplot(outliers_GAP_2010$y ~ outliers_GAP_2010$Month, main="Global active power used per month")$out
 outliers_GAP_2010[which(outliers_GAP_2010$y %in% outliers_GAP_2009_2),] <- NA
@@ -231,8 +231,8 @@ Saint_holidays <- data_frame(
   ds = c(seq.Date(from = date('2007-10-28'), to = date('2007-11-07'), by = "day"), 
          seq.Date(from = date('2008-10-25'), to = date('2008-11-06'), by = "day"),
          seq.Date(from = date('2009-10-24'), to = date('2009-11-05'), by = "day"),
-         seq.Date(from = date('2010-10-23'), to = date('2010-11-03'), by = "day"),
-         seq.Date(from = date('2011-10-22'), to = date('2011-11-02'), by = "day")), 
+         seq.Date(from = date('2010-10-23'), to = date('2010-11-03'), by = "day")),
+         #seq.Date(from = date('2011-10-22'), to = date('2011-11-02'), by = "day")), 
   lower_window = 0,
   upper_window = 1)
 
@@ -243,8 +243,8 @@ Christmas_holidays <- data_frame(
   ds = c(seq.Date(from = date('2007-01-01'), to = date('2007-01-08'), by = "day"), 
          seq.Date(from = date('2007-12-23'), to = date('2008-01-06'), by = "day"),
          seq.Date(from = date('2008-12-20'), to = date('2009-01-05'), by = "day"),
-         seq.Date(from = date('2009-12-19'), to = date('2010-01-04'), by = "day"),
-         seq.Date(from = date('2010-12-18'), to = date('2011-01-02'), by = "day")), 
+         seq.Date(from = date('2009-12-19'), to = date('2010-01-04'), by = "day")),
+         #seq.Date(from = date('2010-12-18'), to = date('2011-01-02'), by = "day")), 
   lower_window = 0,
   upper_window = 1)
 
@@ -255,8 +255,8 @@ Winter_holidays <- data_frame(
   ds = c(seq.Date(from = date('2007-02-17'), to = date('2007-03-05'), by = "day"), 
          seq.Date(from = date('2008-02-24'), to = date('2008-03-09'), by = "day"),
          seq.Date(from = date('2009-02-14'), to = date('2009-03-02'), by = "day"),
-         seq.Date(from = date('2010-02-20'), to = date('2010-03-08'), by = "day"),
-         seq.Date(from = date('2011-02-12'), to = date('2011-02-27'), by = "day")),
+         seq.Date(from = date('2010-02-20'), to = date('2010-03-08'), by = "day")),
+         #seq.Date(from = date('2011-02-12'), to = date('2011-02-27'), by = "day")),
   lower_window = 0,
   upper_window = 1)
 
@@ -267,8 +267,8 @@ Easter_holidays <- data_frame(
   ds = c(seq.Date(from = date('2007-04-07'), to = date('2007-04-23'), by = "day"), 
          seq.Date(from = date('2008-04-20'), to = date('2008-05-04'), by = "day"),
          seq.Date(from = date('2009-04-11'), to = date('2009-04-27'), by = "day"),
-         seq.Date(from = date('2010-04-17'), to = date('2010-05-03'), by = "day"),
-         seq.Date(from = date('2011-04-08'), to = date('2011-04-25'), by = "day")), 
+         seq.Date(from = date('2010-04-17'), to = date('2010-05-03'), by = "day")),
+         #seq.Date(from = date('2011-04-08'), to = date('2011-04-25'), by = "day")), 
   lower_window = 0,
   upper_window = 1)
 

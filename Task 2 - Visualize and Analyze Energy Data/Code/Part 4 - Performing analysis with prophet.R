@@ -37,10 +37,11 @@ head(TS_dataset_GAP.p)
 plot_cross_validation_metric(TS_dataset_GAP.cv, metric = 'mape')
 
 
-
 #plots of prophet
 plot(TS_dataset_GAP, forecast_GAP)
 prophet_plot_components(TS_dataset_GAP, forecast_GAP)
+
+
 
 
 
