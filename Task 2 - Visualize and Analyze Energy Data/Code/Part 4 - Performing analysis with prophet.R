@@ -6,66 +6,47 @@
 #####################################################
 
 
-
-##Setup time series analysis
+#Prophet time series analysis
 ###################################################
 
 ## Create prophet TS for daily average energy useage 
 TS_dataset_GAP <- prophet(holidays = School_holidays)
+
 TS_dataset_GAP <- add_regressor(TS_dataset_GAP, 'rainfall')
 
-TS_dataset_GAP <- fit.prophet(TS_dataset_GAP, df_daily_GAP)
-TS_future_GAP <- make_future_dataframe(TS_dataset_GAP, periods = 365, freq = "day")
+TS_dataset_GAP <- fit.prophet(TS_dataset_GAP,
+                              df_daily_GAP)
+
+TS_future_GAP <- make_future_dataframe(TS_dataset_GAP,
+                                       periods = 365,
+                                       freq = "day")
 
 TS_future_GAP$ds <- date(TS_future_GAP$ds)
+
 TS_future_GAP <- left_join(TS_future_GAP,
                            weather_data %>% 
                              select(ds,
                                     rainfall = Precipitation.amount.in.mm),
                            by = "ds")
-forecast_GAP <- predict(TS_dataset_GAP, TS_future_GAP)
 
-#performance statistics of prophet
+forecast_GAP <- predict(TS_dataset_GAP,
+                        TS_future_GAP)
+
+forecast_GAP$yhat_lower[forecast_GAP$yhat_lower < 0] <- 0
+
+
+
+
+#cross validation & performance statistics of prophet
 TS_dataset_GAP.cv <- (cross_validation(TS_dataset_GAP, 
                                        initial = 730, 
                                        period = 180, 
                                        horizon = 365, 
                                        units = 'days'))
 head(TS_dataset_GAP.cv)
+
 TS_dataset_GAP.p <- performance_metrics(TS_dataset_GAP.cv)
 head(TS_dataset_GAP.p)
-plot_cross_validation_metric(TS_dataset_GAP.cv, metric = 'mape')
 
 
-#plots of prophet
-plot(TS_dataset_GAP, forecast_GAP)
-prophet_plot_components(TS_dataset_GAP, forecast_GAP)
-
-
-
-
-
-## Create prophet TS for useage submeter 1
-TS_dataset_subm1 <- prophet(df_daily_subm1, holidays = School_holidays)
-TS_future_subm1 <- make_future_dataframe(TS_dataset_subm1, periods = 365, freq = "day")
-forecast_subm1 <- predict(TS_dataset_subm1, TS_future_subm1)
-plot(TS_dataset_subm1, forecast_subm1)
-prophet_plot_components(TS_dataset_subm1, forecast_subm1)
-
-
-## Create prophet TS for useage submeter 2
-TS_dataset_subm2 <- prophet(df_daily_subm2, holidays = School_holidays)
-TS_future_subm2 <- make_future_dataframe(TS_dataset_subm2, periods = 365, freq = "day")
-forecast_subm2 <- predict(TS_dataset_subm2, TS_future_subm2)
-plot(TS_dataset_subm2, forecast_subm2)
-prophet_plot_components(TS_dataset_subm2, forecast_subm2)
-
-
-
-## Create prophet TS for useage submeter 3 
-TS_dataset_subm3 <- prophet(df_daily_subm3, holidays = School_holidays)
-TS_future_subm3 <- make_future_dataframe(TS_dataset_subm3, periods = 365, freq = "day")
-forecast_subm3 <- predict(TS_dataset_subm3, TS_future_subm3)
-plot(TS_dataset_subm3, forecast_subm3)
-prophet_plot_components(TS_dataset_subm3, forecast_subm3)
 
