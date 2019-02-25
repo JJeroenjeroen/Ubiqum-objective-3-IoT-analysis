@@ -21,10 +21,12 @@ if(!require(pacman))install.packages("pacman")
 pacman::p_load('dplyr', 'bbplot', 'lubridate', 'RMySQL', 'tidyr',
                'gapminder', 'readr', 'ggplot2',
                'forcats', 'R.utils', 'png', 
-               'grid', 'ggpubr', 'scales', 'prophet')
+               'grid', 'ggpubr', 'scales', 'prophet', 'extrafont')
                
 
-library(prophet)
+loadfonts(device = "win")
+
+
 
 # Create a database connection
 con = dbConnect(MySQL(),

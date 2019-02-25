@@ -69,13 +69,34 @@ ggplot(data_1_year, aes(x = DateTime, y = Global_active_power)) + geom_smooth()
 data_1_day <- Full_dataset %>% 
   filter(DateTime > "2007-11-13" & DateTime < "2007-11-14")
 
+#sub_meter_3 plotted 
 ggplot(data_1_day, aes(x = DateTime, y = Sub_metering_3)) + 
-  geom_line(size = 0.1, color = "tomato") +  
+  geom_line(size = .75, color = "deepskyblue") +  
   theme_classic() +
     labs(x = "Day", y = "kWh",
-       title = "Water heater kWh stats",
-       subtitle = "A day where only the water heater was used")
+       title = "Water Heater Usage On A Given Day") +
+  theme(axis.text=element_text(size=15),
+        axis.title=element_text(size=14,face="bold"),
+        plot.title = element_text(size=22, colour = "navyblue", face="bold", family = "Perpetua"),
+        axis.title.x = element_text(size = 18, colour = "navyblue", family = "Perpetua"),
+        axis.title.y = element_text(size = 18, colour = "navyblue", family = "Perpetua"))
 
+
+
+#Global active power plotted over the day
+ggplot(data_1_day, aes(x = DateTime, y = (Global_active_power*60))) + 
+  geom_line(size = .75, color = "deepskyblue") +  
+  theme_classic() +
+  labs(x = "Day", y = "kWh",
+       title = "Global Active Power Usage On A Given Day") +
+  theme(axis.text=element_text(size=15),
+        axis.title=element_text(size=14,face="bold"),
+        plot.title = element_text(size=22, colour = "navyblue", face="bold", family = "Perpetua"),
+        axis.title.x = element_text(size = 18, colour = "navyblue", family = "Perpetua"),
+        axis.title.y = element_text(size = 18, colour = "navyblue", family = "Perpetua"))
+
+
+windowsFonts()
 
 #create a plot for daily use of the airconditioner
 
@@ -83,11 +104,17 @@ data_2_day <- Full_dataset %>%
   filter(DateTime > "2008-08-06" & DateTime < "2008-08-07")
 
 ggplot(data_2_day, aes(x = DateTime, y = Sub_metering_3)) + 
-  geom_line(size = 0.1, color = "orange") +  
+  geom_line(size = 0.8, color = "deepskyblue") +  
   theme_classic() +
   labs(x = "Day", y = "kWh",
-       title = "Air conditioner kWh stats",
-       subtitle = "A day where only the Airconditioner was used")
+       title = "Air conditioner Usage On A Given Day") +
+  theme(axis.text=element_text(size=15),
+        axis.title=element_text(size=14,face="bold"),
+        plot.title = element_text(size=22, colour = "navyblue", face="bold", family = "Perpetua"),
+        axis.title.x = element_text(size = 18, colour = "navyblue", family = "Perpetua"),
+        axis.title.y = element_text(size = 18, colour = "navyblue", family = "Perpetua"))
+
+
 
 
 #create a plot where both items were used
@@ -96,11 +123,15 @@ data_3_day <- Full_dataset %>%
   filter(DateTime > "2009-09-06" & DateTime < "2009-09-07")
 
 ggplot(data_3_day, aes(x = DateTime, y = Sub_metering_3)) + 
-  geom_line(size = 0.1, color = "blue") +  
+  geom_line(size = 0.8, color = "deepskyblue2") +  
   theme_classic() +
-  labs(x = "Day", y = "kWh",
-       title = "total kWh stats",
-       subtitle = "A day where both items were used")
+  labs(x = "Day", y = "kWh", title = "Total kWh On A Given Day Of One Submeter") +
+  theme(axis.text=element_text(size=15),
+      axis.title=element_text(size=14,face="bold"),
+      plot.title = element_text(size=22, colour = "navyblue", face="bold", family = "Perpetua"),
+      axis.title.x = element_text(size = 18, colour = "navyblue", family = "Perpetua"),
+      axis.title.y = element_text(size = 18, colour = "navyblue", family = "Perpetua"))
+
 
 
 

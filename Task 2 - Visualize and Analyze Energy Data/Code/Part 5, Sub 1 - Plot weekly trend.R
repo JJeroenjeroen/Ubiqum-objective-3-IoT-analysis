@@ -1,5 +1,5 @@
 #####################################################
-# Date:      21-02-2019                             #
+# Date:      22-02-2019                             #
 # Author:    Jeroen Meij                            #
 # File:      Analysis of Smart Home electronic data #
 # Version:   1.0                                    #    
@@ -9,6 +9,7 @@
 
 #plot Weekly trend
 ###################################################
+
 
 #preprocess weekly trend values
 weekly_values <- data.frame(values = forecast_GAP$weekly[c(1:7)], 
