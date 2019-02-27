@@ -34,11 +34,11 @@ ggplot(weekly_values) +
              linetype="dashed") +
   geom_path(aes(x = day,
                 y = (values)),
-            colour = "#FAAB18",
+            colour = "deepskyblue",
             size = 1.2,
             group = 1) +
   #add text  
-  geom_label(aes(x = "Wednesday", y = .13, label = "On Saturday and Sunday,\nmost energy is consumed!"), 
+  geom_label(aes(x = "Thursday", y = .13, label = "Last weekend,\nthe air conditioner was\nturned on all day long!"), 
              hjust = 0, 
              vjust = 0.5, 
              lineheight = 0.8,
@@ -46,10 +46,10 @@ ggplot(weekly_values) +
              fill = "white", 
              label.size = NA, 
              family="Helvetica", 
-             size = 6) +
+             size = 4) +
   
   
-  geom_label(aes(x = "Wednesday", y = .02, label = "Wednesday is\n  laundry day"), 
+  geom_label(aes(x = "Wednesday", y = .035, label = "Wednesday, your \nwashing machine caused an\nincrease in energy consumption"), 
              hjust = +0.39, 
              vjust = 0.6,
              lineheight = 0.8,
@@ -57,9 +57,9 @@ ggplot(weekly_values) +
              fill = "white", 
              label.size = NA, 
              family="Helvetica", 
-             size = 6) +
+             size = 4) +
   
-  geom_label(aes(x = "Monday", y = -.11, label = "On weekdays the family is working,\ncausing a lower energy consumption"), 
+  geom_label(aes(x = "Monday", y = -.11, label = "On weekdays, you consumed\nthe least amount of energy!"), 
              hjust = 0.1, 
              vjust = 0.5,
              lineheight = 0.8,
@@ -67,11 +67,11 @@ ggplot(weekly_values) +
              fill = "white", 
              label.size = NA, 
              family="Helvetica", 
-             size = 6) +
+             size = 4) +
   
   
   #add arrow  
-  geom_curve(aes(x = "Saturday", y = .12, xend = "Thursday", yend = .14), 
+  geom_curve(aes(x = "Saturday", y = .12, xend = "Friday", yend = .14), 
              colour = "#555555", 
              size=0.5, 
              curvature = +0.3,
@@ -88,12 +88,14 @@ ggplot(weekly_values) +
   
   
   scale_y_continuous(breaks = c(-0.1, 0, 0.1),
-                     labels = c("-10%","Average
-                                Weekly
-                                kWh 
-                                ", "+10%")) +
-  labs(title="Weekly Trend",
-       subtitle = "Average electricity usage per day of a French household") + 
-  theme(plot.subtitle=element_text(face="italic", color="red3"))
+                     labels = c("-10%",
+                                "Mean
+kWh
+", "+10%")) +
+  labs(title="Your energy use last week",
+       subtitle = "An overview of which days most energy was consumed") + 
+  theme(plot.subtitle=element_text(face="italic", color="deepskyblue4", size = 15),
+        axis.text.x = element_text(angle=25, hjust=1, size = 15),
+        axis.text.y = element_text(colour = "navyblue")) 
 
 

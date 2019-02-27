@@ -33,7 +33,7 @@ ggplot(Yearly_values) +
              colour="#333333",
              linetype="dashed") +
   geom_path(aes(x = day, y = values),
-            colour = "#FAAB18",
+            colour = "deepskyblue",
             size = 1.2,
             group = 1) + 
   geom_hline(yintercept = -.6,
@@ -42,9 +42,9 @@ ggplot(Yearly_values) +
   bbc_style() +
   
   scale_y_continuous(breaks = c(-0.4, -0.2, 0, 0.2, 0.4),
-                     labels = c("-40%","-20%","Yearly
-                                Average
-                                kWh ",
+                     labels = c("-40%","-20%",
+                                "Average
+ kWh ",
                                 "+20%", "+40%")) +
   
   theme(panel.grid.major.x = element_line(color="#cbcbcb"), 
@@ -66,7 +66,7 @@ ggplot(Yearly_values) +
              arrow = arrow(length = unit(0.04, "npc")) ) +
   
   
-  geom_label(aes(x = as.Date("2007-05-07"), y = .15, label = "During the winter months, the\nhousehold uses, on average,\nfar more energy compared to\nthe other seasons"), 
+  geom_label(aes(x = as.Date("2007-05-07"), y = .15, label = "During last year's winter months, you used\nfar more energy than during the other seasons!"), 
              hjust = 0, 
              vjust = 0,
              lineheight = 0.8,
@@ -74,11 +74,11 @@ ggplot(Yearly_values) +
              fill = "white", 
              label.size = NA, 
              family="Helvetica", 
-             size = 6) +
+             size = 4) +
   
   
   
-  geom_label(aes(x = as.Date("2007-10-12"), y = -.38, label = "During the summer months\nenergy consumption is\nat its lowest point"), 
+  geom_label(aes(x = as.Date("2007-09-28"), y = -.38, label = "During the summer months\nyour energy consumption\nwas at its lowest point"), 
              hjust = 0, 
              vjust = 0,
              lineheight = 0.8,
@@ -86,13 +86,12 @@ ggplot(Yearly_values) +
              fill = "white", 
              label.size = NA, 
              family="Helvetica", 
-             size = 6) +
-  
-  theme(axis.text.x = element_text(hjust = 3)) +
+             size = 4) +
   
   
-  labs(title="Yearly Electricity Trend",
-       subtitle = "Average electricity usage during the year") + 
-  theme(plot.subtitle=element_text(face="italic", color="red3"))
-
-
+  labs(title="Your energy use last year",
+       subtitle = "An overview of energy consumption over the 4 seasons") + 
+  
+  theme(plot.subtitle=element_text(face="italic", color="deepskyblue4", size = 15),
+        axis.text.x = element_text(hjust = 1, angle = 25, size = 15),
+        axis.text.y = element_text(colour = "navyblue", size = 15))
