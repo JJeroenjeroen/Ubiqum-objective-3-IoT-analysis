@@ -27,8 +27,9 @@ df_quarterly_subm <- df_quarterly_subm %>%
 ggplot(df_quarterly_subm, aes(Submeters, kWh, fill = Quarter)) +
   geom_bar(stat="identity", width=.5, position = "dodge") + 
   geom_hline(yintercept = 0, size = 1, colour="#333333") +
+  geom_hline(yintercept = 8.5, size = 1, colour="white") +
   
-  geom_label(aes(x = "Kitchen", y = 2, label = "+-38%"), 
+  geom_label(aes(x = "Kitchen", y = 2, label = "-38%"), 
              hjust = -0.1, 
              vjust = 0,
              lineheight = 0.8,
@@ -46,12 +47,6 @@ ggplot(df_quarterly_subm, aes(Submeters, kWh, fill = Quarter)) +
              curvature = 0,
              arrow = arrow(length = unit(0.03, "npc")) ) +
   
-  geom_curve(aes(x = "Kitchen", y = 1.5, xend = "Kitchen", yend = 3), 
-            colour = "#555555",
-            position = "dodge",
-            size = 0.8, 
-            curvature = 0,
-            arrow = arrow(length = unit(0.03, "npc")) ) +
   
   
   geom_curve(aes(x = "Laundry_room", y = 3.5, xend = "Laundry_room", yend = 2), 
@@ -61,14 +56,8 @@ ggplot(df_quarterly_subm, aes(Submeters, kWh, fill = Quarter)) +
              curvature = 0,
              arrow = arrow(length = unit(0.03, "npc")) ) +
   
-  geom_curve(aes(x = "Laundry_room", y = 2, xend = "Laundry_room", yend = 3.5), 
-             colour = "#555555",
-             position = "dodge",
-             size = 0.8, 
-             curvature = 0,
-             arrow = arrow(length = unit(0.03, "npc")) ) +
   
-  geom_label(aes(x = "Laundry_room", y = 2.5, label = "+-35%"), 
+  geom_label(aes(x = "Laundry_room", y = 2.5, label = "-35%"), 
              hjust = -0.1, 
              vjust = 0,
              lineheight = 0.8,
@@ -78,13 +67,6 @@ ggplot(df_quarterly_subm, aes(Submeters, kWh, fill = Quarter)) +
              family="Helvetica", 
              size = 5) +
   
-
-  geom_curve(aes(x = "Heating", y = 7.7, xend = "Heating", yend = 9.2), 
-             colour = "#555555",
-             position = "dodge",
-             size = 0.8, 
-             curvature = 0,
-             arrow = arrow(length = unit(0.03, "npc")) ) +
   
   geom_curve(aes(x = "Heating", y = 9.2, xend = "Heating", yend = 7.7), 
              colour = "#555555",
@@ -93,7 +75,7 @@ ggplot(df_quarterly_subm, aes(Submeters, kWh, fill = Quarter)) +
              curvature = 0,
              arrow = arrow(length = unit(0.03, "npc")) ) +
   
-  geom_label(aes(x = "Heating", y = 8.2, label = "+-35%"), 
+  geom_label(aes(x = "Heating", y = 8.2, label = "-35%"), 
              hjust = -0.1, 
              vjust = 0,
              lineheight = 0.8,
@@ -106,7 +88,17 @@ ggplot(df_quarterly_subm, aes(Submeters, kWh, fill = Quarter)) +
   
   
   bbc_style() +
-  theme(legend.position = "right") +
+  theme(legend.position = "right",
+        plot.subtitle=element_text(face="italic", color="deepskyblue4", size = 20),
+        axis.text.x = element_text(hjust = 1, angle = 25, size = 17)) +
+  
   scale_fill_manual(values = c("#1380A1", "#FAAB18")) +
-  labs(title="Winter vs. Summer electricity usage",
-       subtitle = "The variation per submeter are relatively similiar")
+  
+  labs(title="Winter vs. Summer",
+       subtitle = "Differences in average daily kWh per subgroup") +
+  
+  scale_x_discrete(labels = c("Heating", "Kitchen", "Laundry Room")) + 
+  scale_y_continuous(breaks = c(0, 2.5, 5, 7.5, 8.5),
+                     labels = c("0", "2.5", "5.0", "7.5", "kWh"))
+
+

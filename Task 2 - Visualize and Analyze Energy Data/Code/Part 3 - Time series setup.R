@@ -120,3 +120,8 @@ School_holidays <- bind_rows(summer_holidays,
                              Winter_holidays, 
                              Easter_holidays)
 
+df_daily_GAP <- left_join(df_daily_GAP, School_holidays, by = "ds")
+df_daily_GAP$holiday_dummy <- df_daily_GAP$upper_window 
+df_daily_GAP <- df_daily_GAP %>% select(-holiday, -lower_window, -upper_window)
+df_daily_GAP$holiday_dummy[is.na(df_daily_GAP$holiday_dummy)] <- 0
+
