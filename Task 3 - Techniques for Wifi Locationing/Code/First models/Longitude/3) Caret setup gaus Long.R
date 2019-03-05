@@ -1,5 +1,5 @@
 #####################################################
-# Date:      04-03-2019                             #
+# Date:      05-03-2019                             #
 # Author:    Jeroen Meij                            #
 # File:      Wifi localization modeling             #
 # Version:   1.0                                    #    
@@ -23,15 +23,15 @@ fitControl <- trainControl(method = control_method,
 
 
 #set training parameters
-train_method = "knn"
-train_metric <- "Accuracy"
+train_method = "gbm"
+train_metric <- "RMSE"
 train_tuneLength = 1
 
 
-#train knn model 
+#train gmb model 
 set.seed(123)
-knn_Fit1 <- train(x = wifi_train_xvalues, 
-                y = wifi_train_yvalues$BUILDINGID,
+gmb_Fit1 <- train(x = wifi_train_xvalues, 
+                y = wifi_train_yvalues$LONGITUDE,
                 method = train_method,
                 metric = train_metric,
                 trControl = fitControl)
@@ -39,13 +39,14 @@ knn_Fit1 <- train(x = wifi_train_xvalues,
 
 
 
+#provide statistics of training data
+print(gmb_Fit1)
+plot(gmb_Fit1)
+
 #predict brand outcomes on the testing data
-Prediction_knn <- predict(knn_Fit1, newdata = wifi_test_xvalues)
-postResample(Prediction_knn, wifi_test_yvalues$BUILDINGID)
+Prediction_gmb_lon <- predict(gmb_Fit1, newdata = wifi_test_xvalues)
+postResample(Prediction_gmb_lon, wifi_test_yvalues$LONGITUDE)
 
-#See the most important predictors
-varImp(knn_Fit1)
 
-#show values in confusion matrix
-confusionMatrix(data = Prediction_knn, wifi_test_yvalues$BUILDINGID)
-
+#add predicted values to testvalues
+wifi_test_yvalues$pred_lon <- Prediction_gmb_lon

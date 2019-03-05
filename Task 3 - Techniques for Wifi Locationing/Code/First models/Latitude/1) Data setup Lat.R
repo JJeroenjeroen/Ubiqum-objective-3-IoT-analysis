@@ -1,5 +1,5 @@
 #####################################################
-# Date:      04-03-2019                             #
+# Date:      05-03-2019                             #
 # Author:    Jeroen Meij                            #
 # File:      Wifi localization modeling             #
 # Version:   1.0                                    #    
@@ -17,6 +17,8 @@ library(readr)
 library(anytime)
 library(caret)
 library(dplyr)
+library(ggthemes)
+
 
 #import data
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles")
@@ -25,9 +27,13 @@ wifi_test <- read.csv("validationData.csv", header=TRUE, row.names=NULL, sep = "
 
 
 #subset for smaller data frame
-wifi_train <- wifi_train %>% filter(FLOOR == 1)
+wifi_partition <- createDataPartition(y = wifi_train$LATITUDE, 
+                                      times = 1, 
+                                      p = (500/19937), 
+                                      list = FALSE)
 
 
+wifi_train <- wifi_train[ wifi_partition, ]
 
 #add an ID for each row
 wifi_train$ID <- seq.int(nrow(wifi_train))
@@ -69,10 +75,3 @@ wifi_test_xvalues <- wifi_test_xvalues + 105
 wifi_test_xvalues[wifi_test_xvalues > 150] <- 0
 wifi_test_xvalues <- (wifi_test_xvalues/105)
 
-#make a histogram of that displays how often the WLAN connectors were connected to a device
-train_set_count <- wifi_test_xvalues
-train_set_count[train_set_count != 0] <- 1
-rowSums(train_set_count)
-histogram(rowSums(train_set_count))
-
-     

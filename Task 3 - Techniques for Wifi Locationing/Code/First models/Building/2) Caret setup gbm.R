@@ -23,29 +23,32 @@ fitControl <- trainControl(method = control_method,
 
 
 #set training parameters
-train_method = "svmRadial"
+train_method = "gbm"
 train_metric <- "Accuracy"
 train_tuneLength = 1
 
 
-#train svm model 
+#train gbm model 
 set.seed(123)
-svm_Fit1 <- train(x = wifi_train_xvalues, 
-                  y = wifi_train_yvalues$BUILDINGID,
-                  method = train_method,
-                  metric = train_metric,
-                  trControl = fitControl)
+gbm_Fit1 <- train(x = wifi_train_xvalues, 
+                y = wifi_train_yvalues$BUILDINGID,
+                method = train_method,
+                metric = train_metric,
+                trControl = fitControl)
 
 
 
 
 #predict brand outcomes on the testing data
-Prediction_svm <- predict(svm_Fit1, newdata = wifi_test_xvalues)
-postResample(Prediction_svm, wifi_test_yvalues$BUILDINGID)
+Prediction_gbm <- predict(gbm_Fit1, newdata = wifi_test_xvalues)
+postResample(Prediction_gbm, wifi_test_yvalues$BUILDINGID)
 
-#See the most important predictors
-varImp(svm_Fit1)
+
+#provide statistics of training data
+print(gbm_Fit1)
+plot(gbm_Fit1)
+
 
 #show values in confusion matrix
-confusionMatrix(data = Prediction_svm, wifi_test_yvalues$BUILDINGID)
+confusionMatrix(data = Prediction_gbm, wifi_test_yvalues$BUILDINGID)
 
