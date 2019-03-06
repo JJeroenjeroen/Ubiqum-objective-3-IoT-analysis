@@ -1,8 +1,8 @@
 #####################################################
-# Date:      04-03-2019                             #
+# Date:      06-03-2019                             #
 # Author:    Jeroen Meij                            #
 # File:      Wifi localization modeling             #
-# Version:   1.0                                    #    
+# Version:   2.0                                    #    
 #####################################################
 
 
@@ -26,17 +26,13 @@ wifi_train <- read.csv("trainingData.csv", header=TRUE, row.names=NULL, sep = ",
 wifi_test <- read.csv("validationData.csv", header=TRUE, row.names=NULL, sep = ",")
 
 
-
+#Preprocessing
 #change class of building and floor to factor
 wifi_train$BUILDINGID <- as.factor(wifi_train$BUILDINGID)
 wifi_train$FLOOR <- as.factor(wifi_train$FLOOR)
-wifi_train$RELATIVEPOSITION <- as.factor(wifi_train$RELATIVEPOSITION)
-wifi_train$PHONEID <- as.factor(wifi_train$PHONEID)
-wifi_train$USERID <- as.factor(wifi_train$USERID)
 
 wifi_test$BUILDINGID <- as.factor(wifi_test$BUILDINGID)
 wifi_test$FLOOR <- as.factor(wifi_test$FLOOR)
-wifi_test$PHONEID <- as.factor(wifi_test$PHONEID)
 
 
 #change unix time variable to actual datetime
@@ -44,9 +40,18 @@ wifi_train$DateTime <- anytime(wifi_train$TIMESTAMP)
 wifi_test$DateTime <- anytime(wifi_test$TIMESTAMP)
 
 
-#create a vector of names for y values data partitioning
-y_names <- c("BUILDINGID", "FLOOR", "LATITUDE", "LONGITUDE")
 
+
+
+
+#Here the values for the data partitioning can be entered
+########################################################################
+
+#how big should the data partition be?
+no_rows_partition <- 500
+
+#which values should be added as a dependent variable?
+y_names <- c("BUILDINGID", "FLOOR", "LATITUDE", "LONGITUDE")
 
 
 
@@ -54,12 +59,12 @@ y_names <- c("BUILDINGID", "FLOOR", "LATITUDE", "LONGITUDE")
 for (i in 1:length(y_names)){
   set.seed(124)
   
-  #create the data partition  
+  #create the data partition of the full trainingset  
   train_id <- createDataPartition(y = wifi_train[,c(y_names[i])], 
-                                  p = 500/nrow(wifi_train), 
+                                  p = no_rows_partition/nrow(wifi_train), 
                                   list = FALSE)
   
-  #make the training set build out of the full dataset  
+  #use the partition to generate the training set that will be used  
   training <- wifi_train[train_id,]
   
   #remove columns without variance in both test and training set   
@@ -67,23 +72,25 @@ for (i in 1:length(y_names)){
   training <- training[-which(apply(training, 2, var) == 0)]
   
   
-  #store train & test set under a seperate name  
+  #store the training & test set under a seperate name  
   assign(paste("train_set_", y_names[i], sep = ""), training)
   assign(paste("test_set_", y_names[i], sep = ""), testing)
-  #save the training set as an rds file  
+  
+  #save the training and testsets as an rds file  
   saveRDS(training, file = paste("train_set_", y_names[i]))
   saveRDS(testing, file = paste("test_set_", y_names[i]))
   
   
   
-  #seperate x and y values for each training dataframe  
+  #seperate x and y values for each training dataframe 
   #this makes the df for the independent variables (x)
   assign(paste("x_train_",
                y_names[i],
                sep = ""),
          training[ , grepl( "WAP" , names(training))])
   
-  #this makes the df for the independent variables (y)  
+  
+  #this makes the df for the dependent variable (y)  
   assign(paste("y_train_",
                y_names[i],
                sep = ""),
@@ -92,12 +99,13 @@ for (i in 1:length(y_names)){
   
   
   #seperate x and y values for each test dataframe  
-  #this makes the df for the independent variables (x)
+  #this makes the df for the dependent variable (x)
   assign(paste("x_test_",
                y_names[i],
                sep = ""),
          testing[ , grepl( "WAP" , names(testing))])
-  #this makes the df for the independent variables (y)  
+  
+  #this makes the df for the dependent test variable (y)  
   assign(paste("y_test_",
                y_names[i],
                sep = ""),
