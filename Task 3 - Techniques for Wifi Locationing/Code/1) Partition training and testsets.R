@@ -19,6 +19,7 @@ library(readr)
 library(anytime)
 library(caret)
 library(dplyr)
+library(rlist)
 
 #import data
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles")
@@ -139,3 +140,5 @@ y_list_test <- c(y_test_BUILDINGID,
                  y_test_FLOOR, 
                  y_test_LATITUDE,
                  y_test_LONGITUDE)
+
+
