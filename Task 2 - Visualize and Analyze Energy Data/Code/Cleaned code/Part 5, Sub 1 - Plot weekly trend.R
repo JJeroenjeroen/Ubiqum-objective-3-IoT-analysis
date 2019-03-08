@@ -45,7 +45,7 @@ ggplot(weekly_values) +
   
   #add texts where necessary  
   geom_label(aes(x = "Thursday", y = .13,
-                 label = "Last weekend,\nthe air conditioner was\nturned on all day long!"), 
+                 label = "During the weekends,\nthe family is home, which\ncauses more energy usage!"), 
              hjust = 0, 
              vjust = 0.5, 
              lineheight = 0.8,
@@ -57,7 +57,7 @@ ggplot(weekly_values) +
   
   
   geom_label(aes(x = "Wednesday", y = .035,
-                 label = "Wednesday, your \nwashing machine caused an\nincrease in energy consumption"), 
+                 label = "On Wednesday, the\nwashing machine often causes\nan increase in energy consumption"), 
              hjust = +0.39, 
              vjust = 0.6,
              lineheight = 0.8,
@@ -68,7 +68,7 @@ ggplot(weekly_values) +
              size = 4) +
   
   geom_label(aes(x = "Monday", y = -.11,
-                 label = "On weekdays, you consumed\nthe least amount of energy!"), 
+                 label = "On weekdays, the least\namount of energy is consumed!"), 
              hjust = 0.1, 
              vjust = 0.5,
              lineheight = 0.8,
@@ -104,8 +104,8 @@ kWh
 ", "+10%")) +
   
   #add titles
-  labs(title="Your energy use last week",
-       subtitle = "An overview of which days most energy was consumed") + 
+  labs(title="Weekly energy use",
+       subtitle = "An overview of during which days most energy is consumed") + 
   
   #add specifics for styling
   theme(plot.subtitle=element_text(face="italic", color="deepskyblue4", size = 15),

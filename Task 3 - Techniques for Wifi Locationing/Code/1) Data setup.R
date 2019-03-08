@@ -20,6 +20,7 @@ library(anytime)
 library(caret)
 library(dplyr)
 library(rlist)
+library(kernlab)
 
 #import data
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles")
@@ -41,6 +42,17 @@ wifi_train$DateTime <- anytime(wifi_train$TIMESTAMP)
 wifi_test$DateTime <- anytime(wifi_test$TIMESTAMP)
 
 
+#split the dataframe in 2 so the independent variables (WAPS) can be adjusted 
+train_set_yvars <- wifi_train[c((ncol(wifi_train)-9):ncol(wifi_train))]
+train_set_wapcolumns <- wifi_train[-c((ncol(wifi_train)-9):ncol(wifi_train))]
+
+#remove rows without variance in both test and training set (76 rows)
+train_set_yvars <- train_set_yvars[-which(apply(train_set_wapcolumns, 1, var) == 0), ]
+train_set_wapcolumns <- train_set_wapcolumns[-which(apply(train_set_wapcolumns, 1, var) == 0), ]
+
+
+
+wifi_train <- bind_cols(train_set_wapcolumns, train_set_yvars)
 
 
 
@@ -49,7 +61,7 @@ wifi_test$DateTime <- anytime(wifi_test$TIMESTAMP)
 ########################################################################
 
 #how big should the data partition be?
-no_rows_partition <- 500
+no_rows_partition <- 1500
 
 #which values should be added as a dependent variable?
 y_names <- c("BUILDINGID", "FLOOR", "LATITUDE", "LONGITUDE")
@@ -115,6 +127,42 @@ for (i in 1:length(y_names)){
   remove(training)
   remove(testing)
 }
+#take exponent of all WAP values train set
+x_train_BUILDINGID <- exp(x_train_BUILDINGID)
+x_train_FLOOR <- exp(x_train_FLOOR)
+x_train_LATITUDE <- exp(x_train_LATITUDE)
+x_train_LONGITUDE <- exp(x_train_LONGITUDE)
+
+#take exponent of all WAP values test set
+x_test_BUILDINGID <- exp(x_test_BUILDINGID)
+x_test_FLOOR <- exp(x_test_FLOOR)
+x_test_LATITUDE <- exp(x_test_LATITUDE)
+x_test_LONGITUDE <- exp(x_test_LONGITUDE)
+
+
+
+
+#normalize rows in the train dataframe 
+x_train_BUILDINGID <- as.data.frame(scale(t(x_train_BUILDINGID)))
+x_train_FLOOR <- as.data.frame(scale(t(x_train_FLOOR)))
+x_train_LATITUDE <- as.data.frame(scale(t(x_train_LATITUDE)))
+x_train_LONGITUDE <- as.data.frame(scale(t(x_train_LONGITUDE)))
+
+x_train_BUILDINGID <- as.data.frame(t(x_train_BUILDINGID))
+x_train_FLOOR <- as.data.frame(t(x_train_FLOOR))
+x_train_LATITUDE <- as.data.frame(t(x_train_LATITUDE))
+x_train_LONGITUDE <- as.data.frame(t(x_train_LONGITUDE))
+
+#normalize the rows of the test dataframe
+x_test_BUILDINGID <- as.data.frame(scale(t(x_test_BUILDINGID)))
+x_test_FLOOR <- as.data.frame(scale(t(x_test_FLOOR)))
+x_test_LATITUDE <- as.data.frame(scale(t(x_test_LATITUDE)))
+x_test_LONGITUDE <- as.data.frame(scale(t(x_test_LONGITUDE)))
+
+x_test_BUILDINGID <- as.data.frame(t(x_test_BUILDINGID))
+x_test_FLOOR <- as.data.frame(t(x_test_FLOOR))
+x_test_LATITUDE <- as.data.frame(t(x_test_LATITUDE))
+x_test_LONGITUDE <- as.data.frame(t(x_test_LONGITUDE))
 
 
 
@@ -140,5 +188,3 @@ y_list_test <- c(y_test_BUILDINGID,
                  y_test_FLOOR, 
                  y_test_LATITUDE,
                  y_test_LONGITUDE)
-
-

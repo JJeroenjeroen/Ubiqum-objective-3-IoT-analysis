@@ -75,7 +75,7 @@ ggplot(Yearly_values) +
   
 #add labels to tell about the maxima/minima  
   geom_label(aes(x = as.Date("2007-05-07"), y = .15,
-                 label = "During last year's winter months, you used\nfar more energy than during the other seasons!"), 
+                 label = "During winter months, you used far\nmore energy than during the other seasons!"), 
              hjust = 0, 
              vjust = 0,
              lineheight = 0.8,
@@ -100,7 +100,7 @@ ggplot(Yearly_values) +
 
 #add titles to the plot  
   
-  labs(title="Your energy use last year",
+  labs(title="Yearly energy consumption",
        subtitle = "An overview of energy consumption over the 4 seasons") + 
   
   

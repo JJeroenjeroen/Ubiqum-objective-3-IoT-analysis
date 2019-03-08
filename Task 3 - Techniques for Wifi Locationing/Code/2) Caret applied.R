@@ -6,10 +6,9 @@
 #####################################################
 
 
-#This file will create the train various models and save the results in a csv file  
+#This file will create the train various models and save the results in a RDS file  
 #For more information, visit http://archive.ics.uci.edu/ml/datasets/UJIIndoorLoc
 #########################################################################################
-
 
 #set cross validation parameters
 control_method <-"repeatedcv"
@@ -28,7 +27,7 @@ fitControl <- trainControl(method = control_method,
 ############################################################################
 
 #which algorithms should be used?
-algorithms <- c("knn", "gbm", "rf")
+algorithms <- c("knn", "rf", "svmPoly")
 
 #for which dependent variables models should be trained?
 y_names <- c("BUILDINGID", "FLOOR", "LATITUDE", "LONGITUDE")
@@ -48,14 +47,14 @@ for (method in algorithms){
   #the following for-loop will loop all datasets x & y's and make a trained  model for them
   for (i in 1:length(y_names)){
     set.seed(124)
-
+    
     #create a throwaway var of the trained values that will be used in this loop to predict the dependent variables
     throwaway_fit <- train(x = x_list_train[[y_names[i]]],
                            y = y_list_train[[y_names[i]]],
                            method = train_method,
                            trControl = fitControl)
     
-
+    
     
     #create a throwaway predict that can be used in this loop and removed afterwards 
     throwaway_predict <- predict(throwaway_fit,
@@ -76,15 +75,15 @@ for (method in algorithms){
     
     throwaway_df <- data.frame(throwaway_predict)
     colnames(throwaway_df) <- paste(method, 
-                                         "_predict_",
-                                         y_names[i], 
-                                         sep = "")
+                                    "_predict_",
+                                    y_names[i], 
+                                    sep = "")
     
     
     #store predictions of all loops in a list
     all_predicted_values <- list.append(all_predicted_values, 
                                         throwaway_df)
-   
+    
     
     #remove throwaway parts of loop
     remove(throwaway_fit)
@@ -92,6 +91,8 @@ for (method in algorithms){
     remove(throwaway_df)
   }
 }
+
+
 
 
 #store all predicted values in an RDS file
