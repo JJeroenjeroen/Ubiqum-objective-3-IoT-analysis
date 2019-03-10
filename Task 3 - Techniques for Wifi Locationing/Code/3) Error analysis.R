@@ -13,7 +13,7 @@
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles/Results")
 
 #read results into R
-predictions <- readRDS("2019-03-08 predicted values")
+predictions <- readRDS("2019-03-09 predicted values")
 
 #add all actual y values in 1 dataframe with the results
 predictions <- data.frame(predictions)

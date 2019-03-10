@@ -61,7 +61,7 @@ wifi_train <- bind_cols(train_set_wapcolumns, train_set_yvars)
 ########################################################################
 
 #how big should the data partition be?
-no_rows_partition <- 1500
+no_rows_partition <- 1000
 
 #which values should be added as a dependent variable?
 y_names <- c("BUILDINGID", "FLOOR", "LATITUDE", "LONGITUDE")
