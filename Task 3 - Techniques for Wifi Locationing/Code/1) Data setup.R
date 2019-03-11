@@ -51,21 +51,22 @@ train_set_yvars <- train_set_yvars[-which(apply(train_set_wapcolumns, 1, var) ==
 train_set_wapcolumns <- train_set_wapcolumns[-which(apply(train_set_wapcolumns, 1, var) == 0), ]
 
 
-
 wifi_train <- bind_cols(train_set_wapcolumns, train_set_yvars)
 
-
+x_list_train <- list()
+y_list_train <- list()
+x_list_test <- list()
+y_list_test <- list()
 
 
 #Here the values for the data partitioning can be entered
 ########################################################################
 
 #how big should the data partition be?
-no_rows_partition <- 1000
+no_rows_partition <- 5000
 
 #which values should be added as a dependent variable?
 y_names <- c("BUILDINGID", "FLOOR", "LATITUDE", "LONGITUDE")
-
 
 
 #for loop that creates smaller data frames for each data dependent variable
@@ -97,94 +98,38 @@ for (i in 1:length(y_names)){
   
   #seperate x and y values for each training dataframe 
   #this makes the df for the independent variables (x)
-  assign(paste("x_train_",
-               y_names[i],
-               sep = ""),
+  assign("throwaway_x_train",
          training[ , grepl( "WAP" , names(training))])
   
-  
-  #this makes the df for the dependent variable (y)  
-  assign(paste("y_train_",
-               y_names[i],
-               sep = ""),
-         training[y_names[i]])
-  
-  
+
   
   #seperate x and y values for each test dataframe  
   #this makes the df for the dependent variable (x)
-  assign(paste("x_test_",
-               y_names[i],
-               sep = ""),
+  assign("throwaway_x_test",
          testing[ , grepl( "WAP" , names(testing))])
   
-  #this makes the df for the dependent test variable (y)  
-  assign(paste("y_test_",
-               y_names[i],
-               sep = ""),
-         testing[y_names[i]])
+  #take exponent of train and test set
+  throwaway_x_train <- exp(throwaway_x_train)
+  throwaway_x_test <- exp(throwaway_x_test)
   
+  #normalize rows in the train & test dataframe 
+  throwaway_x_train <- as.data.frame(scale(t(throwaway_x_train)))
+  throwaway_x_test <- as.data.frame(scale(t(throwaway_x_test)))       
+  throwaway_x_train <- as.data.frame(t(throwaway_x_train))
+  throwaway_x_test <- as.data.frame(t(throwaway_x_test))
+         
+  
+
+#assign training and testing x & y frames seperately in a list  
+  x_list_train[[y_names[i]]] <- throwaway_x_train
+  y_list_train[y_names[i]] <- training[y_names[i]]
+  
+  x_list_test[[y_names[i]]] <- throwaway_x_test
+  y_list_test[y_names[i]] <- testing[y_names[i]]
+  
+  
+  remove(throwaway_x_train)
+  remove(throwaway_x_test)
   remove(training)
   remove(testing)
 }
-#take exponent of all WAP values train set
-x_train_BUILDINGID <- exp(x_train_BUILDINGID)
-x_train_FLOOR <- exp(x_train_FLOOR)
-x_train_LATITUDE <- exp(x_train_LATITUDE)
-x_train_LONGITUDE <- exp(x_train_LONGITUDE)
-
-#take exponent of all WAP values test set
-x_test_BUILDINGID <- exp(x_test_BUILDINGID)
-x_test_FLOOR <- exp(x_test_FLOOR)
-x_test_LATITUDE <- exp(x_test_LATITUDE)
-x_test_LONGITUDE <- exp(x_test_LONGITUDE)
-
-
-
-
-#normalize rows in the train dataframe 
-x_train_BUILDINGID <- as.data.frame(scale(t(x_train_BUILDINGID)))
-x_train_FLOOR <- as.data.frame(scale(t(x_train_FLOOR)))
-x_train_LATITUDE <- as.data.frame(scale(t(x_train_LATITUDE)))
-x_train_LONGITUDE <- as.data.frame(scale(t(x_train_LONGITUDE)))
-
-x_train_BUILDINGID <- as.data.frame(t(x_train_BUILDINGID))
-x_train_FLOOR <- as.data.frame(t(x_train_FLOOR))
-x_train_LATITUDE <- as.data.frame(t(x_train_LATITUDE))
-x_train_LONGITUDE <- as.data.frame(t(x_train_LONGITUDE))
-
-#normalize the rows of the test dataframe
-x_test_BUILDINGID <- as.data.frame(scale(t(x_test_BUILDINGID)))
-x_test_FLOOR <- as.data.frame(scale(t(x_test_FLOOR)))
-x_test_LATITUDE <- as.data.frame(scale(t(x_test_LATITUDE)))
-x_test_LONGITUDE <- as.data.frame(scale(t(x_test_LONGITUDE)))
-
-x_test_BUILDINGID <- as.data.frame(t(x_test_BUILDINGID))
-x_test_FLOOR <- as.data.frame(t(x_test_FLOOR))
-x_test_LATITUDE <- as.data.frame(t(x_test_LATITUDE))
-x_test_LONGITUDE <- as.data.frame(t(x_test_LONGITUDE))
-
-
-
-
-#create lists with all x and y dataframes for training and testsets
-x_list_train  <- list(BUILDINGID = x_train_BUILDINGID,
-                      FLOOR =  x_train_FLOOR,
-                      LATITUDE =  x_train_LATITUDE,
-                      LONGITUDE = x_train_LONGITUDE)
-
-y_list_train <- c(y_train_BUILDINGID,
-                  y_train_FLOOR, 
-                  y_train_LATITUDE,
-                  y_train_LONGITUDE)
-
-
-x_list_test  <- list(BUILDINGID = x_test_BUILDINGID,
-                     FLOOR =  x_test_FLOOR,
-                     LATITUDE =  x_test_LATITUDE,
-                     LONGITUDE = x_test_LONGITUDE)
-
-y_list_test <- c(y_test_BUILDINGID,
-                 y_test_FLOOR, 
-                 y_test_LATITUDE,
-                 y_test_LONGITUDE)

@@ -27,7 +27,7 @@ fitControl <- trainControl(method = control_method,
 ############################################################################
 
 #which algorithms should be used?
-algorithms <- c("knn", "rf", "svmPoly")
+algorithms <- c("knn")
 
 #for which dependent variables models should be trained?
 y_names <- c("BUILDINGID", "FLOOR", "LATITUDE", "LONGITUDE")
@@ -95,8 +95,8 @@ for (method in algorithms){
 
 
 
+
 #store all predicted values in an RDS file
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles/Results")
 saveRDS(all_predicted_values,
         file = paste(Sys.Date(), "predicted values2"))
-

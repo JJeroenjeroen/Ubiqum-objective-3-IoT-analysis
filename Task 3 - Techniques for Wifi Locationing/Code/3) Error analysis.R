@@ -13,7 +13,7 @@
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles/Results")
 
 #read results into R
-predictions <- readRDS("2019-03-09 predicted values")
+predictions <- readRDS("2019-03-09 predicted values2")
 
 #add all actual y values in 1 dataframe with the results
 predictions <- data.frame(predictions)
@@ -27,10 +27,26 @@ remove(y_list_test, y_df_test, predictions)
 confusionMatrix(data = all_y_values$knn_predict_FLOOR, all_y_values$FLOOR)
 confusionMatrix(data = all_y_values$knn_predict_BUILDING, all_y_values$BUILDING)
 
+confusionMatrix(data = all_y_values$rf_predict_FLOOR, all_y_values$FLOOR)
+confusionMatrix(data = all_y_values$rf_predict_BUILDING, all_y_values$BUILDING)
+
+
+confusionMatrix(data = all_y_values$svmPoly_predict_FLOOR, all_y_values$FLOOR)
+confusionMatrix(data = all_y_values$svmPoly_predict_BUILDING, all_y_values$BUILDING)
+
+
 #plot results
 ggplot(all_y_values) +
   
   geom_point((aes(x = LONGITUDE, y = LATITUDE))) +
-  geom_point((aes(x = knn_predict_LONGITUDE, y = knn_predict_LATITUDE, colour = BUILDINGID))) + 
-  facet_wrap(~ FLOOR)
+  geom_point((aes(x = knn_predict_LONGITUDE, y = knn_predict_LATITUDE, colour = BUILDINGID)))
 
+ggplot(all_y_values) +
+  
+  geom_point((aes(x = LONGITUDE, y = LATITUDE))) +
+  geom_point((aes(x = svmPoly_predict_LONGITUDE, y = svmPoly_predict_LATITUDE, colour = BUILDINGID)))
+
+ggplot(all_y_values) +
+  
+  geom_point((aes(x = LONGITUDE, y = LATITUDE))) +
+  geom_point((aes(x = rf_predict_LONGITUDE, y = rf_predict_LATITUDE, colour = BUILDINGID)))
