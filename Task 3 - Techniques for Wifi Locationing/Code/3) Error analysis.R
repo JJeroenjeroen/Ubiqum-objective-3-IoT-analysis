@@ -13,7 +13,7 @@
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles/Results")
 
 #read results into R
-predictions <- readRDS("2019-03-09 predicted values2")
+predictions <- readRDS("2019-03-12 predicted values2")
 
 #add all actual y values in 1 dataframe with the results
 predictions <- data.frame(predictions)
@@ -40,6 +40,7 @@ ggplot(all_y_values) +
   
   geom_point((aes(x = LONGITUDE, y = LATITUDE))) +
   geom_point((aes(x = knn_predict_LONGITUDE, y = knn_predict_LATITUDE, colour = BUILDINGID)))
+
 
 ggplot(all_y_values) +
   
