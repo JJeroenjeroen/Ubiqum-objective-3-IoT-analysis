@@ -39,7 +39,8 @@ confusionMatrix(data = all_y_values$svmPoly_predict_BUILDING, all_y_values$BUILD
 ggplot(all_y_values) +
   
   geom_point((aes(x = LONGITUDE, y = LATITUDE))) +
-  geom_point((aes(x = knn_predict_LONGITUDE, y = knn_predict_LATITUDE, colour = BUILDINGID)))
+  geom_point((aes(x = knn_predict_LONGITUDE, y = knn_predict_LATITUDE, colour = BUILDINGID))) +
+  facet_wrap("FLOOR")
 
 
 ggplot(all_y_values) +
