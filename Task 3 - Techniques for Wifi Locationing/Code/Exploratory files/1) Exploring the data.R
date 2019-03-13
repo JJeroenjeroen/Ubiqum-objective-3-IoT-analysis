@@ -26,7 +26,15 @@ setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi
 wifi_train <- read.csv("trainingData.csv", header=TRUE, row.names=NULL, sep = ",")
 wifi_test <- read.csv("validationData.csv", header=TRUE, row.names=NULL, sep = ",")
 
+wifi_train$train <- "train"
+wifi_test$train <- "test"
 
+wifi_train <- bind_rows(wifi_train, wifi_test)
+
+
+ggplot(wifi_train) +
+  geom_point(aes(x = LONGITUDE, y = LATITUDE, colour = train)) + 
+  facet_wrap("FLOOR")
 
 #add an ID for each row
 wifi_train$ID <- seq.int(nrow(wifi_train))

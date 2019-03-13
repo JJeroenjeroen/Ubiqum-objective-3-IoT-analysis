@@ -6,14 +6,16 @@
 #####################################################
 
 
-#This file will create the train various models and save the results in a RDS file  
+#This file will give the results and plot the predictions to see where the errors occur  
 #For more information, visit http://archive.ics.uci.edu/ml/datasets/UJIIndoorLoc
 #########################################################################################
 #set working directory to get the resultss
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles/Results")
 
 #read results into R
-predictions <- readRDS("2019-03-12 predicted values2")
+predictions <- readRDS("2019-03-13 predicted values3")
+predictions <- readRDS("knn 12-03")
+
 
 #add all actual y values in 1 dataframe with the results
 predictions <- data.frame(predictions)
@@ -39,7 +41,7 @@ confusionMatrix(data = all_y_values$svmPoly_predict_BUILDING, all_y_values$BUILD
 ggplot(all_y_values) +
   
   geom_point((aes(x = LONGITUDE, y = LATITUDE))) +
-  geom_point((aes(x = knn_predict_LONGITUDE, y = knn_predict_LATITUDE, colour = BUILDINGID))) +
+  geom_point((aes(x = knn_predict_LONGITUDE, y = knn_predict_LATITUDE, colour = knn_predict_FLOOR))) +
   facet_wrap("FLOOR")
 
 
@@ -52,3 +54,14 @@ ggplot(all_y_values) +
   
   geom_point((aes(x = LONGITUDE, y = LATITUDE))) +
   geom_point((aes(x = rf_predict_LONGITUDE, y = rf_predict_LATITUDE, colour = BUILDINGID)))
+
+
+  
+  ggplot(all_y_values) +
+    geom_density(aes(x = (knn_predict_LONGITUDE - LONGITUDE))) 
+  
+  ggplot(all_y_values) +
+    geom_density(aes(x = (knn_predict_LATITUDE - LATITUDE))) 
+  
+  
+  

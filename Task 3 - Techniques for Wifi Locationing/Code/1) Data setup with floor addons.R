@@ -42,12 +42,17 @@ test_set_wapcolumns <- wifi_test[-c((ncol(wifi_test)-8):ncol(wifi_test))]
 #create dataframes for the BUILDINGID & floor specifically
 building_floor_train <- train_set_yvars %>% select(BUILDINGID, FLOOR)
 building_floor_test <- test_set_yvars %>% select(BUILDINGID, FLOOR)
-
-
+Long_lat_train <- train_set_yvars %>% select(LONGITUDE, LATITUDE)
+Long_lat_test <- test_set_yvars %>% select(LONGITUDE, LATITUDE)
 
 #add BUILDINGID & floor for later preprocessing
 train_set_wapcolumns <- bind_cols(train_set_wapcolumns, building_floor_train)
 test_set_wapcolumns <- bind_cols(test_set_wapcolumns, building_floor_test)
+
+#add longitude and latitude to set
+train_set_wapcolumns <- bind_cols(train_set_wapcolumns, Long_lat_train)
+test_set_wapcolumns <- bind_cols(test_set_wapcolumns, Long_lat_test)
+
 
 #add ID to train and test sets
 train_set_yvars$ID <- seq.int(nrow(train_set_yvars)) + 101
@@ -68,33 +73,75 @@ test_set_wapcolumns_2 <- test_set_wapcolumns %>% filter(BUILDINGID == 2)
 
 #change weaks signals to no signal
 train_set_wapcolumns_0[train_set_wapcolumns_0 <= -80] <- 100
-train_set_wapcolumns_1[train_set_wapcolumns_1 <= -90] <- 100
+#train_set_wapcolumns_1[train_set_wapcolumns_1 <= -90] <- 100
 train_set_wapcolumns_2[train_set_wapcolumns_2 <= -80] <- 100
 
 test_set_wapcolumns_0[test_set_wapcolumns_0 <= -80] <- 100
-test_set_wapcolumns_1[test_set_wapcolumns_1 <= -90] <- 100
+#test_set_wapcolumns_1[test_set_wapcolumns_1 <= -90] <- 100
 test_set_wapcolumns_2[test_set_wapcolumns_2 <= -80] <- 100
 
+
+
 #create specific dataframe for floors of building 1
-B1_floor1_train <- train_set_wapcolumns_1 %>% filter(FLOOR == 1)
-B1_floor0_train <- train_set_wapcolumns_1 %>% filter(FLOOR == 0)
-B1_floor_rest_train <- train_set_wapcolumns_1 %>% filter(!(FLOOR == 1 | FLOOR == 0))
+B1_floor1_train <- train_set_wapcolumns_1 %>% filter(FLOOR == 1 &
+                                                       LONGITUDE > -7530 &
+                                                       LONGITUDE < -7450 &
+                                                       LATITUDE > 4864835 &
+                                                       LATITUDE < 4864905)
+B1_floor0_train <- train_set_wapcolumns_1 %>% filter(FLOOR == 0 &
+                                                       LONGITUDE > -7530 &
+                                                       LONGITUDE < -7450 &
+                                                       LATITUDE > 4864835 &
+                                                       LATITUDE < 4864905)
 
-B1_floor1_test <- test_set_wapcolumns_1 %>% filter(FLOOR == 1)
-B1_floor0_test <- test_set_wapcolumns_1 %>% filter(FLOOR == 0)
-B1_floor_rest_test <- test_set_wapcolumns_1 %>% filter(!(FLOOR == 1 | FLOOR == 0))
+B1_floor_rest_train <- train_set_wapcolumns_1 %>% filter(!((FLOOR == 1 &
+                                                              LONGITUDE > -7530 &
+                                                              LONGITUDE < -7450 &
+                                                              LATITUDE > 4864835 &
+                                                              LATITUDE < 4864905) |
+                                                             FLOOR == 0 &
+                                                             LONGITUDE > -7530 &
+                                                             LONGITUDE < -7450 &
+                                                             LATITUDE > 4864835 &
+                                                             LATITUDE < 4864905))
+
+
+B1_floor1_test <- test_set_wapcolumns_1 %>% filter(FLOOR == 1 &
+                                                     LONGITUDE > -7530 &
+                                                     LONGITUDE < -7450 &
+                                                     LATITUDE > 4864835 &
+                                                     LATITUDE < 4864905)
+B1_floor0_test <- test_set_wapcolumns_1 %>% filter(FLOOR == 0 &
+                                                     LONGITUDE > -7530 &
+                                                     LONGITUDE < -7450 &
+                                                     LATITUDE > 4864835 &
+                                                     LATITUDE < 4864905)
+
+B1_floor_rest_test <- test_set_wapcolumns_1 %>% filter(!((FLOOR == 1 &
+                                                            LONGITUDE > -7530 &
+                                                            LONGITUDE < -7450 &
+                                                            LATITUDE > 4864835 &
+                                                            LATITUDE < 4864905) |
+                                                           FLOOR == 0 &
+                                                           LONGITUDE > -7530 &
+                                                           LONGITUDE < -7450 &
+                                                           LATITUDE > 4864835 &
+                                                           LATITUDE < 4864905))
 
 
 
 
-#change values of floor 1
+#change WAP values of specific part of floor 1
 B1_floor1_train[B1_floor1_train < -75] <- 100
 B1_floor1_test[B1_floor1_test < -75] <- 100
 
-
-#change values of floor 0
+#change WAP values of floor 0
 B1_floor0_train[B1_floor0_train < -90] <- 100
 B1_floor0_test[B1_floor0_test < -90] <- 100
+
+#change values of rest
+B1_floor_rest_train[B1_floor_rest_train < -90] <- 100
+B1_floor_rest_test[B1_floor_rest_test < -90] <- 100
 
 
 train_set_wapcolumns_1 <- bind_rows(B1_floor1_train, B1_floor_rest_train, B1_floor0_train)
@@ -111,6 +158,16 @@ test_set_wapcolumns$BUILDINGID <-  NULL
 
 train_set_wapcolumns$FLOOR <- NULL
 test_set_wapcolumns$FLOOR <- NULL
+
+
+train_set_wapcolumns$LATITUDE <-  NULL
+test_set_wapcolumns$LATITUDE <-  NULL
+
+
+train_set_wapcolumns$LONGITUDE <-  NULL
+test_set_wapcolumns$LONGITUDE <-  NULL
+
+
 #combine dataframe again and remove ID so later on rowvariance can be calculated more easily
 wifi_train <- left_join(train_set_wapcolumns, train_set_yvars, by = "ID")
 wifi_test <- left_join(test_set_wapcolumns, test_set_yvars, by = "ID")
@@ -141,11 +198,11 @@ test_set_wapcolumns[test_set_wapcolumns == 100] <- -100
 train_set_wapcolumns[train_set_wapcolumns >= -30] <- train_set_wapcolumns[train_set_wapcolumns >= -30] -30
 
 
-#remove rows without variance in both test and training set (76 rows)
+#remove rows without variance in both test and training set 
 train_set_yvars <- train_set_yvars[-which(apply(train_set_wapcolumns, 1, var) == 0), ]
 train_set_wapcolumns <- train_set_wapcolumns[-which(apply(train_set_wapcolumns, 1, var) == 0), ]
 
-#remove rows without variance in both test and testing set (76 rows)
+#remove rows without variance in both test and testing set
 test_set_yvars <- test_set_yvars[-which(apply(test_set_wapcolumns, 1, var) == 0), ]
 test_set_wapcolumns <- test_set_wapcolumns[-which(apply(test_set_wapcolumns, 1, var) == 0), ]
 

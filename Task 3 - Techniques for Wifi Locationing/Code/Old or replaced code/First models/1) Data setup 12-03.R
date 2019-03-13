@@ -29,41 +29,109 @@ wifi_test <- read.csv("validationData.csv", header=TRUE, row.names=NULL, sep = "
 
 
 #Preprocessing
-#split the dataframe in 2 so the independent variables (WAPS) can be adjusted 
-train_set_yvars <- wifi_train[c((ncol(wifi_train)-9):ncol(wifi_train))]
-train_set_wapcolumns <- wifi_train[-c((ncol(wifi_train)-9):ncol(wifi_train))]
+#split the trainingset in 2 so the independent variables (WAPS) can be adjusted 
+train_set_yvars <- wifi_train[c((ncol(wifi_train)-8):ncol(wifi_train))]
+train_set_wapcolumns <- wifi_train[-c((ncol(wifi_train)-8):ncol(wifi_train))]
 
-#split the dataframe in 2 so the independent variables (WAPS) can be adjusted 
-test_set_yvars <- wifi_test[c((ncol(wifi_test)-9):ncol(wifi_test))]
-test_set_wapcolumns <- wifi_test[-c((ncol(wifi_test)-9):ncol(wifi_test))]
 
-#change values of 100's
-train_set_wapcolumns[train_set_wapcolumns == 100] <- -106
-train_set_wapcolumns[train_set_wapcolumns > -35] <- train_set_wapcolumns[train_set_wapcolumns > -35] - 35
-train_set_wapcolumns[train_set_wapcolumns < -90] <- -106
-train_set_wapcolumns <- train_set_wapcolumns + 106
+#split the testset in 2 so the independent variables (WAPS) can be adjusted 
+test_set_yvars <- wifi_test[c((ncol(wifi_test)-8):ncol(wifi_test))]
+test_set_wapcolumns <- wifi_test[-c((ncol(wifi_test)-8):ncol(wifi_test))]
 
-#change values of 100's
-test_set_wapcolumns[test_set_wapcolumns == 100] <- -106
-test_set_wapcolumns[test_set_wapcolumns > -35] <- test_set_wapcolumns[test_set_wapcolumns > -35] - 35
-test_set_wapcolumns[test_set_wapcolumns < -90] <- -106
-test_set_wapcolumns <- test_set_wapcolumns + 106
+#create dataframes for the BUILDINGID specifically
+buildingID_train <- train_set_yvars %>% select(BUILDINGID)
+buildingID_test <- test_set_yvars %>% select(BUILDINGID)
+
+
+
+#add BUILDINGID for later preprocessing
+train_set_wapcolumns <- bind_cols(train_set_wapcolumns, buildingID_train)
+test_set_wapcolumns <- bind_cols(test_set_wapcolumns, buildingID_test)
+
+#add ID to train and test sets
+train_set_yvars$ID <- seq.int(nrow(train_set_yvars)) + 101
+train_set_wapcolumns$ID <- seq.int(nrow(train_set_wapcolumns)) + 101
+test_set_yvars$ID <- seq.int(nrow(test_set_yvars)) + 101
+test_set_wapcolumns$ID <- seq.int(nrow(test_set_wapcolumns)) + 101
+
+
+#split sets depending on BUILDINGID
+train_set_wapcolumns_0 <- train_set_wapcolumns %>% filter(BUILDINGID == 0) 
+train_set_wapcolumns_1 <- train_set_wapcolumns %>% filter(BUILDINGID == 1)
+train_set_wapcolumns_2 <- train_set_wapcolumns %>% filter(BUILDINGID == 2)
+
+test_set_wapcolumns_0 <- test_set_wapcolumns %>% filter(BUILDINGID == 0) 
+test_set_wapcolumns_1 <- test_set_wapcolumns %>% filter(BUILDINGID == 1)
+test_set_wapcolumns_2 <- test_set_wapcolumns %>% filter(BUILDINGID == 2)
+
+
+#change weaks signals to no signal
+train_set_wapcolumns_0[train_set_wapcolumns_0 <= -80] <- 100
+train_set_wapcolumns_1[train_set_wapcolumns_1 <= -90] <- 100
+train_set_wapcolumns_2[train_set_wapcolumns_2 <= -80] <- 100
+
+test_set_wapcolumns_0[test_set_wapcolumns_0 <= -80] <- 100
+test_set_wapcolumns_1[test_set_wapcolumns_1 <= -90] <- 100
+test_set_wapcolumns_2[test_set_wapcolumns_2 <= -80] <- 100
+
+
+#bind rows back together
+train_set_wapcolumns <- bind_rows(train_set_wapcolumns_0, train_set_wapcolumns_1, train_set_wapcolumns_2)
+test_set_wapcolumns <- bind_rows(test_set_wapcolumns_0, test_set_wapcolumns_1, test_set_wapcolumns_2)
+
+#remove BUILDINGID 
+train_set_wapcolumns$BUILDINGID <-  NULL
+test_set_wapcolumns$BUILDINGID <-  NULL
+
+#combine dataframe again and remove ID so later on rowvariance can be calculated more easily
+wifi_train <- left_join(train_set_wapcolumns, train_set_yvars, by = "ID")
+wifi_test <- left_join(test_set_wapcolumns, test_set_yvars, by = "ID")
+
+#remove ID´s
+wifi_train$ID <- NULL
+wifi_test$ID <- NULL
+
+
+#split the trainingset in 2 so the independent variables (WAPS) can be adjusted 
+train_set_yvars <- wifi_train[c((ncol(wifi_train)-8):ncol(wifi_train))]
+train_set_wapcolumns <- wifi_train[-c((ncol(wifi_train)-8):ncol(wifi_train))]
+
+
+#split the testset in 2 so the independent variables (WAPS) can be adjusted 
+test_set_yvars <- wifi_test[c((ncol(wifi_test)-8):ncol(wifi_test))]
+test_set_wapcolumns <- wifi_test[-c((ncol(wifi_test)-8):ncol(wifi_test))]
+
+
+
+
+#change weaks signals to no signal
+
+train_set_wapcolumns[train_set_wapcolumns == 100] <- -100
+test_set_wapcolumns[test_set_wapcolumns == 100] <- -100
+
+
+train_set_wapcolumns[train_set_wapcolumns >= -30] <- train_set_wapcolumns[train_set_wapcolumns >= -30] -30
 
 
 #remove rows without variance in both test and training set (76 rows)
 train_set_yvars <- train_set_yvars[-which(apply(train_set_wapcolumns, 1, var) == 0), ]
 train_set_wapcolumns <- train_set_wapcolumns[-which(apply(train_set_wapcolumns, 1, var) == 0), ]
 
+#remove rows without variance in both test and testing set (76 rows)
+test_set_yvars <- test_set_yvars[-which(apply(test_set_wapcolumns, 1, var) == 0), ]
+test_set_wapcolumns <- test_set_wapcolumns[-which(apply(test_set_wapcolumns, 1, var) == 0), ]
+
+train_set_wapcolumns <- 100 + train_set_wapcolumns
+test_set_wapcolumns <- 100 + test_set_wapcolumns
 
 #combine dataframe again and remove the seperate parts
 wifi_train <- bind_cols(train_set_wapcolumns, train_set_yvars)
-remove(train_set_yvars, train_set_wapcolumns)
-
-
-#combine dataframe again and remove the seperate parts
 wifi_test <- bind_cols(test_set_wapcolumns, test_set_yvars)
-remove(test_set_yvars, test_set_wapcolumns)
 
+
+
+
+remove(train_set_yvars, train_set_wapcolumns)
 
 #create empty lists that will be used in the loop
 x_list_train <- list()
@@ -127,32 +195,29 @@ for (i in 1:length(y_names)){
   assign("throwaway_x_train",
          training[ , grepl( "WAP" , names(training))])
   
-
+  
   
   #seperate x and y values for each test dataframe  
   #this makes the df for the dependent variable (x)
   assign("throwaway_x_test",
          testing[ , grepl( "WAP" , names(testing))])
   
-  #take exponent of train and test set
-  throwaway_x_train <- exp(throwaway_x_train)
-  throwaway_x_test <- exp(throwaway_x_test)
+  
   
   #normalize rows in the train & test dataframe 
   throwaway_x_train <- as.data.frame(scale(t(throwaway_x_train)))
   throwaway_x_test <- as.data.frame(scale(t(throwaway_x_test)))       
   throwaway_x_train <- as.data.frame(t(throwaway_x_train))
   throwaway_x_test <- as.data.frame(t(throwaway_x_test))
-         
   
-
-#assign training and testing x & y frames seperately in a list  
+  
+  
+  #assign training and testing x & y frames seperately in a list  
   x_list_train[[y_names[i]]] <- throwaway_x_train
   y_list_train[y_names[i]] <- training[y_names[i]]
   
   x_list_test[[y_names[i]]] <- throwaway_x_test
   y_list_test[y_names[i]] <- testing[y_names[i]]
-  
   
   remove(throwaway_x_train)
   remove(throwaway_x_test)

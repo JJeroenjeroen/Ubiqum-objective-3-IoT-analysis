@@ -6,6 +6,7 @@
 #####################################################
 
 
+
 #This file will create the train various models and save the results in a RDS file  
 #For more information, visit http://archive.ics.uci.edu/ml/datasets/UJIIndoorLoc
 #########################################################################################
@@ -97,4 +98,4 @@ for (method in algorithms){
 #store all predicted values in an RDS file
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles/Results")
 saveRDS(all_predicted_values,
-        file = paste(Sys.Date(), "predicted values2"))
+        file = paste(Sys.Date(), "predicted values3"))
