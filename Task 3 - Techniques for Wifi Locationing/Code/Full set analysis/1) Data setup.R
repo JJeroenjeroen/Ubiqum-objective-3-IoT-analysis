@@ -73,11 +73,9 @@ test_set_wapcolumns_2 <- test_set_wapcolumns %>% filter(BUILDINGID == 2)
 
 #change weaks signals to no signal
 train_set_wapcolumns_0[train_set_wapcolumns_0 <= -80] <- 100
-#train_set_wapcolumns_1[train_set_wapcolumns_1 <= -90] <- 100
 train_set_wapcolumns_2[train_set_wapcolumns_2 <= -80] <- 100
 
 test_set_wapcolumns_0[test_set_wapcolumns_0 <= -80] <- 100
-#test_set_wapcolumns_1[test_set_wapcolumns_1 <= -90] <- 100
 test_set_wapcolumns_2[test_set_wapcolumns_2 <= -80] <- 100
 
 
@@ -88,6 +86,8 @@ B1_floor1_train <- train_set_wapcolumns_1 %>% filter(FLOOR == 1 &
                                                        LONGITUDE < -7450 &
                                                        LATITUDE > 4864835 &
                                                        LATITUDE < 4864905)
+
+
 B1_floor0_train <- train_set_wapcolumns_1 %>% filter(FLOOR == 0 &
                                                        LONGITUDE > -7530 &
                                                        LONGITUDE < -7450 &
@@ -111,6 +111,7 @@ B1_floor1_test <- test_set_wapcolumns_1 %>% filter(FLOOR == 1 &
                                                      LONGITUDE < -7450 &
                                                      LATITUDE > 4864835 &
                                                      LATITUDE < 4864905)
+
 B1_floor0_test <- test_set_wapcolumns_1 %>% filter(FLOOR == 0 &
                                                      LONGITUDE > -7530 &
                                                      LONGITUDE < -7450 &
@@ -122,7 +123,7 @@ B1_floor_rest_test <- test_set_wapcolumns_1 %>% filter(!((FLOOR == 1 &
                                                             LONGITUDE < -7450 &
                                                             LATITUDE > 4864835 &
                                                             LATITUDE < 4864905) |
-                                                           FLOOR == 0 &
+                                                         FLOOR == 0 &
                                                            LONGITUDE > -7530 &
                                                            LONGITUDE < -7450 &
                                                            LATITUDE > 4864835 &
