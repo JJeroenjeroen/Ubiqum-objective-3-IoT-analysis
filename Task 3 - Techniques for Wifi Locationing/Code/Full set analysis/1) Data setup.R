@@ -29,6 +29,12 @@ wifi_train <- read.csv("trainingData.csv", header=TRUE, row.names=NULL, sep = ",
 wifi_test <- read.csv("validationData.csv", header=TRUE, row.names=NULL, sep = ",")
 
 
+wifi_train$longlatuser <- paste(wifi_train$LONGITUDE, wifi_train$LATITUDE, wifi_train$USERID, wifi_train$FLOOR)
+wifi_train = wifi_train[order(wifi_train[,'longlatuser'],-wifi_train[,'TIMESTAMP']),]
+wifi_train = wifi_train[!duplicated(wifi_train$longlatuser),]
+
+wifi_train$longlatuser <- NULL
+
 #Preprocessing
 #split the trainingset in 2 so the independent variables (WAPS) can be adjusted 
 train_set_yvars <- wifi_train[c((ncol(wifi_train)-8):ncol(wifi_train))]
@@ -72,11 +78,8 @@ test_set_wapcolumns_2 <- test_set_wapcolumns %>% filter(BUILDINGID == 2)
 
 
 #change weaks signals to no signal
-train_set_wapcolumns_0[train_set_wapcolumns_0 <= -80] <- 100
-train_set_wapcolumns_2[train_set_wapcolumns_2 <= -80] <- 100
-
-test_set_wapcolumns_0[test_set_wapcolumns_0 <= -80] <- 100
-test_set_wapcolumns_2[test_set_wapcolumns_2 <= -80] <- 100
+train_set_wapcolumns_0[train_set_wapcolumns_0 <= -90] <- 100
+train_set_wapcolumns_2[train_set_wapcolumns_2 <= -90] <- 100
 
 
 
@@ -106,47 +109,17 @@ B1_floor_rest_train <- train_set_wapcolumns_1 %>% filter(!((FLOOR == 1 &
                                                              LATITUDE < 4864905))
 
 
-B1_floor1_test <- test_set_wapcolumns_1 %>% filter(FLOOR == 1 &
-                                                     LONGITUDE > -7530 &
-                                                     LONGITUDE < -7450 &
-                                                     LATITUDE > 4864835 &
-                                                     LATITUDE < 4864905)
-
-B1_floor0_test <- test_set_wapcolumns_1 %>% filter(FLOOR == 0 &
-                                                     LONGITUDE > -7530 &
-                                                     LONGITUDE < -7450 &
-                                                     LATITUDE > 4864835 &
-                                                     LATITUDE < 4864905)
-
-B1_floor_rest_test <- test_set_wapcolumns_1 %>% filter(!((FLOOR == 1 &
-                                                            LONGITUDE > -7530 &
-                                                            LONGITUDE < -7450 &
-                                                            LATITUDE > 4864835 &
-                                                            LATITUDE < 4864905) |
-                                                         FLOOR == 0 &
-                                                           LONGITUDE > -7530 &
-                                                           LONGITUDE < -7450 &
-                                                           LATITUDE > 4864835 &
-                                                           LATITUDE < 4864905))
-
-
-
-
 #change WAP values of specific part of floor 1
 B1_floor1_train[B1_floor1_train < -75] <- 100
-B1_floor1_test[B1_floor1_test < -75] <- 100
 
 #change WAP values of floor 0
 B1_floor0_train[B1_floor0_train < -90] <- 100
-B1_floor0_test[B1_floor0_test < -90] <- 100
 
 #change values of rest
 B1_floor_rest_train[B1_floor_rest_train < -90] <- 100
-B1_floor_rest_test[B1_floor_rest_test < -90] <- 100
 
 
 train_set_wapcolumns_1 <- bind_rows(B1_floor1_train, B1_floor_rest_train, B1_floor0_train)
-test_set_wapcolumns_1 <- bind_rows(B1_floor1_test, B1_floor_rest_test, B1_floor0_test)
 
 
 #bind rows back together
@@ -203,9 +176,6 @@ train_set_wapcolumns[train_set_wapcolumns >= -30] <- train_set_wapcolumns[train_
 train_set_yvars <- train_set_yvars[-which(apply(train_set_wapcolumns, 1, var) == 0), ]
 train_set_wapcolumns <- train_set_wapcolumns[-which(apply(train_set_wapcolumns, 1, var) == 0), ]
 
-#remove rows without variance in both test and testing set
-test_set_yvars <- test_set_yvars[-which(apply(test_set_wapcolumns, 1, var) == 0), ]
-test_set_wapcolumns <- test_set_wapcolumns[-which(apply(test_set_wapcolumns, 1, var) == 0), ]
 
 train_set_wapcolumns <- 100 + train_set_wapcolumns
 test_set_wapcolumns <- 100 + test_set_wapcolumns
@@ -229,7 +199,7 @@ y_list_test <- list()
 ########################################################################
 
 #how big should the data partition be?
-no_rows_partition <- 5000
+no_rows_partition <- 1000
 
 #which values should be added as a dependent variable?
 y_names <- c("BUILDINGID", "FLOOR", "LATITUDE", "LONGITUDE")
@@ -278,8 +248,6 @@ for (i in 1:length(y_names)){
   #this makes the df for the dependent variable (x)
   assign("throwaway_x_test",
          testing[ , grepl( "WAP" , names(testing))])
-  
-  
   
   #normalize rows in the train & test dataframe 
   throwaway_x_train <- as.data.frame(scale(t(throwaway_x_train)))

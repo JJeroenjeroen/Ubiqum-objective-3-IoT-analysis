@@ -11,8 +11,8 @@
 #For more information, visit http://archive.ics.uci.edu/ml/datasets/UJIIndoorLoc
 #########################################################################################
 
-setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Location predictions/Building 0")
-source(file = "Building 0 preprocess.R")
+setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Location predictions")
+source(file = "Preprocess complete thing.R")
 
 #set cross validation parameters
 control_method <-"repeatedcv"
@@ -101,4 +101,4 @@ for (method in algorithms){
 #store all predicted values in an RDS file
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles/Results")
 saveRDS(all_predicted_values,
-        file = paste(Sys.Date(), "BUilding 0"))
+        file = paste(Sys.Date(), "total_longlat"))

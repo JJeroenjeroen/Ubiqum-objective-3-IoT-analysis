@@ -1,5 +1,5 @@
 #####################################################
-# Date:      14-03-2019                             #
+# Date:      06-03-2019                             #
 # Author:    Jeroen Meij                            #
 # File:      Wifi localization modeling             #
 # Version:   2.0                                    #    
@@ -11,22 +11,21 @@
 #For more information, visit http://archive.ics.uci.edu/ml/datasets/UJIIndoorLoc
 #########################################################################################
 
-setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Floor predictions/Building 1")
-source(file = "Building 1 preprocess.R")
+setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Location predictions")
+source(file = "Preprocess complete thing.R")
 
 #set cross validation parameters
 control_method <-"repeatedcv"
 control_folds <- 10
 control_repeats <- 1
-control_search <- "grid"
+
 
 fitControl <- trainControl(method = control_method,
                            number = control_folds,
-                           repeats = control_repeats,
-                           search = control_search)
+                           repeats = control_repeats)
 
 
-train_tuneGrid <- expand.grid(.k=c(2:5))
+
 
 #Choose parameters for training and testing the models
 ############################################################################
@@ -39,7 +38,6 @@ all_predicted_values <- list()
 
 
 ############################################################################
-
 
 #this for-loop will specify which algorithm the caret package will use
 for (method in algorithms){
@@ -55,7 +53,6 @@ for (method in algorithms){
     throwaway_fit <- train(x = x_list_train[[y_names[i]]],
                            y = y_list_train[[y_names[i]]],
                            method = train_method,
-                           tuneGrid = train_tuneGrid,
                            trControl = fitControl)
     
     
@@ -103,4 +100,4 @@ for (method in algorithms){
 #store all predicted values in an RDS file
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles/Results")
 saveRDS(all_predicted_values,
-        file = paste(Sys.Date(), "BUilding 1"))
+        file = paste(Sys.Date(), "total_longlat"))

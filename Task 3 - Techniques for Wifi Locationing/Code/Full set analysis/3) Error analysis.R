@@ -14,7 +14,7 @@ setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi
 
 #read results into R
 
-predictions <- readRDS("2019-03-13 predicted values3")
+predictions <- readRDS("2019-03-15 predicted values3")
 
 
 #add all actual y values in 1 dataframe with the results
@@ -45,23 +45,12 @@ ggplot(all_y_values) +
   facet_wrap("FLOOR")
 
 
-ggplot(all_y_values) +
-  
-  geom_point((aes(x = LONGITUDE, y = LATITUDE))) +
-  geom_point((aes(x = svmPoly_predict_LONGITUDE, y = svmPoly_predict_LATITUDE, colour = BUILDINGID)))
+all_y_values$longerr <- all_y_values$knn_predict_LATITUDE - all_y_values$LATITUDE
+all_y_values$laterr <- all_y_values$knn_predict_LONGITUDE - all_y_values$LONGITUDE
 
-ggplot(all_y_values) +
-  
-  geom_point((aes(x = LONGITUDE, y = LATITUDE))) +
-  geom_point((aes(x = rf_predict_LONGITUDE, y = rf_predict_LATITUDE, colour = BUILDINGID)))
+all_y_values_err <- all_y_values %>% filter(abs(longerr) > 15) 
 
-
+#plot results
+ggplot(all_y_values_err) +
   
-  ggplot(all_y_values) +
-    geom_density(aes(x = (knn_predict_LONGITUDE - LONGITUDE))) 
-  
-  ggplot(all_y_values) +
-    geom_density(aes(x = (knn_predict_LATITUDE - LATITUDE))) 
-  
-  
-  
+  geom_point((aes(x = LONGITUDE, y = LATITUDE)))

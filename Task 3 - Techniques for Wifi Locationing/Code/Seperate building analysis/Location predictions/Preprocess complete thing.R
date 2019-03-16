@@ -27,19 +27,8 @@ test_B0_wapcolumns <- Building_0_test[-c((ncol(Building_0_test)-8):ncol(Building
 train_B0_wapcolumns[train_B0_wapcolumns <= -90] <- 100
 
 
-#change weaks signals to no signal
-train_B0_wapcolumns[train_B0_wapcolumns == 100] <- -100
-test_B0_wapcolumns[test_B0_wapcolumns == 100] <- -100
+train_B0_wapcolumns[train_B0_wapcolumns >= -30] <- 100
 
-#change too strong signals to no signal
-train_B0_wapcolumns[train_B0_wapcolumns >= -30] <- -100
-
-
-
-
-#make values positive
-train_B0_wapcolumns <- 100 + train_B0_wapcolumns
-test_B0_wapcolumns <- 100 + test_B0_wapcolumns
 
 #combine dataframe again and remove the seperate parts
 Building_0_train <- bind_cols(train_B0_wapcolumns, train_B0_yvars)
@@ -188,11 +177,6 @@ B1_F1_part <- Building_1_train %>% filter(FLOOR == 1 &
 
 
 
-Building_1_train <- bind_rows(Building_1_train, B1_F0_part, B1_F0_part, B1_F0_part, 
-                              B1_F0_part, B1_F0_part, B1_F0_part, B1_F0_part, B1_F0_part, 
-                              B1_F0_part, B1_F0_part, B1_F0_part, B1_F1_part)
-
-
 #remove ID´s
 Building_1_train$ID <- NULL
 Building_1_test$ID <- NULL
@@ -206,16 +190,8 @@ test_B1_yvars <- Building_1_test[c((ncol(Building_1_test)-8):ncol(Building_1_tes
 test_B1_wapcolumns <- Building_1_test[-c((ncol(Building_1_test)-8):ncol(Building_1_test))]
 
 
-#change weaks signals to no signal
-train_B1_wapcolumns[train_B1_wapcolumns == 100] <- -100
-test_B1_wapcolumns[test_B1_wapcolumns == 100] <- -100
-
 #change too strong signals to no signal
-train_B1_wapcolumns[train_B1_wapcolumns >= -30] <- -100
-
-#make values positive
-train_B1_wapcolumns <- 100 + train_B1_wapcolumns
-test_B1_wapcolumns <- 100 + test_B1_wapcolumns
+train_B1_wapcolumns[train_B1_wapcolumns >= -30] <- 100
 
 
 #combine dataframe again and remove the seperate parts
@@ -237,18 +213,8 @@ test_B2_wapcolumns <- Building_2_test[-c((ncol(Building_2_test)-8):ncol(Building
 train_B2_wapcolumns[train_B2_wapcolumns <= -90] <- 100
 
 
-#change weaks signals to no signal
-train_B2_wapcolumns[train_B2_wapcolumns == 100] <- -100
-test_B2_wapcolumns[test_B2_wapcolumns == 100] <- -100
-
 #change too strong signals to no signal
 train_B2_wapcolumns[train_B2_wapcolumns >= -30] <- train_B2_wapcolumns[train_B2_wapcolumns >= -30] -30
-
-
-
-#make values positive
-train_B2_wapcolumns <- 100 + train_B2_wapcolumns
-test_B2_wapcolumns <- 100 + test_B2_wapcolumns
 
 
 
@@ -257,7 +223,11 @@ Building_2_train <- bind_cols(train_B2_wapcolumns, train_B2_yvars)
 Building_2_test <- bind_cols(test_B2_wapcolumns, test_B2_yvars)
 
 
+wifi_train <- bind_rows(Building_0_train, Building_1_train, Building_2_train)
+wifi_test <- bind_rows(Building_0_test, Building_1_test, Building_2_test)
+
 #create empty lists that will be used in the loop
+
 x_list_train <- list()
 y_list_train <- list()
 x_list_test <- list()
@@ -268,43 +238,39 @@ y_list_test <- list()
 ########################################################################
 
 #how big should the data partition be?
-no_rows_partition <- 502
+no_rows_partition <- 1000
 
 #which values should be added as a dependent variable?
-y_names <- c("FLOOR", "LATITUDE", "LONGITUDE")
+y_names <- c("LATITUDE", "LONGITUDE")
 
 
 
 #change class of building and floor to factor
-Building_0_train$BUILDINGID <- as.factor(Building_0_train$BUILDINGID)
-Building_0_train$FLOOR <- as.factor(Building_0_train$FLOOR)
+wifi_train$BUILDINGID <- as.factor(wifi_train$BUILDINGID)
+wifi_train$FLOOR <- as.factor(wifi_train$FLOOR)
 
-Building_0_test$BUILDINGID <- as.factor(Building_0_test$BUILDINGID)
-Building_0_test$FLOOR <- as.factor(Building_0_test$FLOOR)
+wifi_test$BUILDINGID <- as.factor(wifi_test$BUILDINGID)
+wifi_test$FLOOR <- as.factor(wifi_test$FLOOR)
 
 
 #change unix time variable to actual datetime
-Building_0_train$DateTime <- anytime(Building_0_train$TIMESTAMP)
-Building_0_test$DateTime <- anytime(Building_0_test$TIMESTAMP)
-
+wifi_train$DateTime <- anytime(wifi_train$TIMESTAMP)
+wifi_test$DateTime <- anytime(wifi_test$TIMESTAMP)
 
 #for loop that creates smaller data frames for each data dependent variable
 for (i in 1:length(y_names)){
   set.seed(124)
   
   #create the data partition of the full trainingset  
-  train_id <- createDataPartition(y = Building_0_train[,c(y_names[i])], 
-                                  p = no_rows_partition/nrow(Building_0_train), 
+  train_id <- createDataPartition(y = wifi_train[,c(y_names[i])], 
+                                  p = no_rows_partition/nrow(wifi_train), 
                                   list = FALSE)
   
   #use the partition to generate the training set that will be used  
-  training <- Building_0_train[train_id,]
+  training <- wifi_train[train_id,]
   
   #remove columns without variance in both test and training set   
-  testing <- Building_0_test[-which(apply(training, 2, var) == 0)]
-  training <- training[-which(apply(training, 2, var) == 0)]
-  
-  
+  testing <- wifi_test
   
   #seperate x and y values for each training dataframe 
   #this makes the df for the independent variables (x)
@@ -320,11 +286,18 @@ for (i in 1:length(y_names)){
   
   
   
+  throwaway_x_train <- as.data.frame(exp(throwaway_x_train))
+  throwaway_x_test <- as.data.frame(exp(throwaway_x_test))       
+  
   #normalize rows in the train & test dataframe 
   throwaway_x_train <- as.data.frame(scale(t(throwaway_x_train)))
   throwaway_x_test <- as.data.frame(scale(t(throwaway_x_test)))       
   throwaway_x_train <- as.data.frame(t(throwaway_x_train))
   throwaway_x_test <- as.data.frame(t(throwaway_x_test))
+  
+  #remove rows with NA's
+  throwaway_x_train[complete.cases(throwaway_x_train), ]
+  throwaway_x_test[complete.cases(throwaway_x_test), ]
   
   
   
