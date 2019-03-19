@@ -29,7 +29,6 @@ train_B0_wapcolumns <- train_B0_wapcolumns[-which(apply(train_B0_wapcolumns, 1, 
 
 #change weaks signals to no signal
 train_B0_wapcolumns[train_B0_wapcolumns <= -90] <- 100
-#test_B0_wapcolumns[test_B0_wapcolumns <= -90] <- 100
 
 
 #change weaks signals to no signal
@@ -66,7 +65,7 @@ y_list_test <- list()
 no_rows_partition <- 3000
 
 #which values should be added as a dependent variable?
-y_names <- c("FLOOR", "LATITUDE", "LONGITUDE")
+y_names <- c("FLOOR")
 
 
 

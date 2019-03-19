@@ -26,7 +26,6 @@ fitControl <- trainControl(method = control_method,
                            search = control_search)
 
 
-train_tuneGrid <- expand.grid(.k=c(2:5))
 
 #Choose parameters for training and testing the models
 ############################################################################
@@ -55,7 +54,6 @@ for (method in algorithms){
     throwaway_fit <- train(x = x_list_train[[y_names[i]]],
                            y = y_list_train[[y_names[i]]],
                            method = train_method,
-                           tuneGrid = train_tuneGrid,
                            trControl = fitControl)
     
     
@@ -103,4 +101,4 @@ for (method in algorithms){
 #store all predicted values in an RDS file
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles/Results")
 saveRDS(all_predicted_values,
-        file = paste(Sys.Date(), "BUilding 0"))
+        file = paste(Sys.Date(), "BUilding 0 floor"))

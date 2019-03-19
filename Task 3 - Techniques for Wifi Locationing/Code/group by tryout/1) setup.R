@@ -33,7 +33,13 @@ wifi_train <- bind_cols(WAPS, Yvalues)
 
 #group by usedID and position
 wifi_train$longlatuser <- paste(wifi_train$LONGITUDE, wifi_train$LATITUDE, wifi_train$FLOOR)
-wifi_train = wifi_train[order(wifi_train[,'longlatuser'],-wifi_train[,'TIMESTAMP']),]
+latest_uniques = wifi_train[order(wifi_train[,'longlatuser'],-wifi_train[,'TIMESTAMP']),]
+latest_uniques = latest_uniques[!duplicated(latest_uniques$longlatuser),]
+latest_uniques$longlatuser <- paste(latest_uniques$longlatuser, latest_uniques$TIMESTAMP)
+wifi_train$longlatuser <- paste(wifi_train$longlatuser, wifi_train$TIMESTAMP)
+
+wifi_train <- wifi_train[wifi_train$longlatuser %in% latest_uniques$longlatuser,]
+
 
 #group by for the positions
 grouped_set_mean <- wifi_train %>% group_by(longlatuser) %>% summarize_all(mean)

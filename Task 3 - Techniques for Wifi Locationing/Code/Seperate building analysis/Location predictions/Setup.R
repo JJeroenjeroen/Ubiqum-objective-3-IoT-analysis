@@ -34,17 +34,6 @@ setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi
 wifi_train <- read.csv("trainingData.csv", header=TRUE, row.names=NULL, sep = ",")
 wifi_test <- read.csv("validationData.csv", header=TRUE, row.names=NULL, sep = ",")
 
-wifi_train$longlatuser <- paste(wifi_train$LONGITUDE, wifi_train$LATITUDE, wifi_train$USERID, wifi_train$FLOOR)
-wifi_train = wifi_train[order(wifi_train[,'longlatuser'], -wifi_train[,'TIMESTAMP']),]
-wifi_train = wifi_train[!duplicated(wifi_train$longlatuser),]
-
-
-ggplot(wifi_train) +
-  geom_point(aes(x = LONGITUDE, y = LATITUDE)) +
-  facet_wrap("FLOOR")
-
-wifi_train$longlatuser <- NULL
-
 #make seperate traininsets per building
 Building_0_train <- wifi_train %>% filter(BUILDINGID == 0)
 Building_1_train <- wifi_train %>% filter(BUILDINGID == 1)

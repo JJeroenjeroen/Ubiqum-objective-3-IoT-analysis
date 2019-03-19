@@ -70,7 +70,7 @@ y_list_test <- list()
 no_rows_partition <- 3000
 
 #which values should be added as a dependent variable?
-y_names <- c("FLOOR", "LATITUDE", "LONGITUDE")
+y_names <- c("FLOOR")
 
 
 

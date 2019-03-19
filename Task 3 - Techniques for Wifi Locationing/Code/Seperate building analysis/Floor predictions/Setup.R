@@ -26,7 +26,7 @@ library(plotly)
 library(doParallel)
 
 #add extra core to calculate
-registerDoParallel(2)
+registerDoParallel(1)
 getDoParWorkers()
 
 #import data

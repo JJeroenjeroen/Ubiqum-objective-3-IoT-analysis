@@ -9,7 +9,7 @@
 #This file will do the preprocsessing for Building 0 
 #For more information, visit http://archive.ics.uci.edu/ml/dataB1s/UJIIndoorLoc
 #########################################################################################
-setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Location predictions")
+setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Location predictions/")
 source(file = "Setup.R")
 
 #remove files building 0 & 2
@@ -191,10 +191,15 @@ train_B1_wapcolumns <- train_B1_wapcolumns[-which(apply(train_B1_wapcolumns, 1, 
 train_B1_wapcolumns <- 100 + train_B1_wapcolumns
 test_B1_wapcolumns <- 100 + test_B1_wapcolumns
 
+#remove duplicate values
+train_B1_yvars <- train_B1_yvars[which(!duplicated(train_B1_wapcolumns)),]
+train_B1_wapcolumns <- train_B1_wapcolumns[which(!duplicated(train_B1_wapcolumns)),]
+
 
 #combine dataframe again and remove the seperate parts
 Building_1_train <- bind_cols(train_B1_wapcolumns, train_B1_yvars)
 Building_1_test <- bind_cols(test_B1_wapcolumns, test_B1_yvars)
+
 
 #create empty lists that will be used in the loop
 x_list_train <- list()
@@ -207,10 +212,10 @@ y_list_test <- list()
 ########################################################################
 
 #how big should the data partition be?
-no_rows_partition <- 3000
+no_rows_partition <- 2000
 
 #which values should be added as a dependent variable?
-y_names <- c("FLOOR", "LATITUDE", "LONGITUDE")
+y_names <- c("LONGITUDE", "LATITUDE")
 
 
 

@@ -22,6 +22,10 @@ test_B0_yvars <- Building_0_test[c((ncol(Building_0_test)-8):ncol(Building_0_tes
 test_B0_wapcolumns <- Building_0_test[-c((ncol(Building_0_test)-8):ncol(Building_0_test))]
 
 
+#remove rows without variance in both test and training B0 
+train_B0_yvars <- train_B0_yvars[-which(apply(train_B0_wapcolumns, 1, var) == 0), ]
+train_B0_wapcolumns <- train_B0_wapcolumns[-which(apply(train_B0_wapcolumns, 1, var) == 0), ]
+
 
 #change weaks signals to no signal
 train_B0_wapcolumns[train_B0_wapcolumns <= -90] <- 100
@@ -41,220 +45,15 @@ train_B0_wapcolumns[train_B0_wapcolumns >= -30] <- -100
 train_B0_wapcolumns <- 100 + train_B0_wapcolumns
 test_B0_wapcolumns <- 100 + test_B0_wapcolumns
 
+
+#remove duplicate values
+train_B0_yvars <- train_B0_yvars[which(!duplicated(train_B0_wapcolumns)),]
+train_B0_wapcolumns <- train_B0_wapcolumns[which(!duplicated(train_B0_wapcolumns)),]
+
 #combine dataframe again and remove the seperate parts
 Building_0_train <- bind_cols(train_B0_wapcolumns, train_B0_yvars)
 Building_0_test <- bind_cols(test_B0_wapcolumns, test_B0_yvars)
 
-
-#split the trainingB1 in 2 so the independent variables (WAPS) can be adjusted 
-train_B1_yvars <- Building_1_train[c((ncol(Building_1_train)-8):ncol(Building_1_train))]
-train_B1_wapcolumns <- Building_1_train[-c((ncol(Building_1_train)-8):ncol(Building_1_train))]
-
-
-#split the testB1 in 2 so the independent variables (WAPS) can be adjusted 
-test_B1_yvars <- Building_1_test[c((ncol(Building_1_test)-8):ncol(Building_1_test))]
-test_B1_wapcolumns <- Building_1_test[-c((ncol(Building_1_test)-8):ncol(Building_1_test))]
-
-
-#create dataframes for the BUILDINGID & floor specifically
-building_floor_train <- train_B1_yvars %>% select(BUILDINGID, FLOOR)
-building_floor_test <- test_B1_yvars %>% select(BUILDINGID, FLOOR)
-Long_lat_train <- train_B1_yvars %>% select(LONGITUDE, LATITUDE)
-Long_lat_test <- test_B1_yvars %>% select(LONGITUDE, LATITUDE)
-
-#add BUILDINGID & floor for later preprocessing
-train_B1_wapcolumns <- bind_cols(train_B1_wapcolumns, building_floor_train)
-test_B1_wapcolumns <- bind_cols(test_B1_wapcolumns, building_floor_test)
-
-#add longitude and latitude to set
-train_B1_wapcolumns <- bind_cols(train_B1_wapcolumns, Long_lat_train)
-test_B1_wapcolumns <- bind_cols(test_B1_wapcolumns, Long_lat_test)
-
-#remove dataframes with lat&lot & building and floor again
-remove(building_floor_train, building_floor_test, Long_lat_train, Long_lat_test)
-
-#add ID to train and test sets
-train_B1_yvars$ID <- seq.int(nrow(train_B1_yvars)) + 101
-train_B1_wapcolumns$ID <- seq.int(nrow(train_B1_wapcolumns)) + 101
-test_B1_yvars$ID <- seq.int(nrow(test_B1_yvars)) + 101
-test_B1_wapcolumns$ID <- seq.int(nrow(test_B1_wapcolumns)) + 101
-
-
-#create specific dataframe for floors of building 1
-B1_floor1_train <- train_B1_wapcolumns %>% filter(FLOOR == 1 &
-                                                    LONGITUDE > -7530 &
-                                                    LONGITUDE < -7450 &
-                                                    LATITUDE > 4864835 &
-                                                    LATITUDE < 4864905)
-
-
-B1_floor0_train <- train_B1_wapcolumns %>% filter(FLOOR == 0 &
-                                                    LATITUDE < 4864905 & 
-                                                    LATITUDE > 4864875 &
-                                                    LONGITUDE > -7510 & 
-                                                    LONGITUDE < -7470)
-
-B1_floor_rest_train <- train_B1_wapcolumns %>% filter(!((FLOOR == 1 &
-                                                           LONGITUDE > -7530 &
-                                                           LONGITUDE < -7450 &
-                                                           LATITUDE > 4864835 &
-                                                           LATITUDE < 4864905) |
-                                                          FLOOR == 0 & 
-                                                          LATITUDE < 4864905 & 
-                                                          LATITUDE > 4864875 &
-                                                          LONGITUDE > -7510 & 
-                                                          LONGITUDE < -7470))
-
-
-B1_floor1_test <- test_B1_wapcolumns %>% filter(FLOOR == 1 &
-                                                  LONGITUDE > -7530 &
-                                                  LONGITUDE < -7450 &
-                                                  LATITUDE > 4864835 &
-                                                  LATITUDE < 4864905)
-
-B1_floor0_test <- test_B1_wapcolumns %>% filter(FLOOR == 0 & 
-                                                  LATITUDE < 4864905 & 
-                                                  LATITUDE > 4864875 &
-                                                  LONGITUDE > -7510 & 
-                                                  LONGITUDE < -7470)
-
-B1_floor_rest_test <- test_B1_wapcolumns %>% filter(!((FLOOR == 1 &
-                                                         LONGITUDE > -7530 &
-                                                         LONGITUDE < -7450 &
-                                                         LATITUDE > 4864835 &
-                                                         LATITUDE < 4864905) |
-                                                        FLOOR == 0 & 
-                                                        LATITUDE < 4864905 & 
-                                                        LATITUDE > 4864875 &
-                                                        LONGITUDE > -7510 & 
-                                                        LONGITUDE < -7470))
-
-
-
-
-#change WAP values of specific part of floor 1
-B1_floor1_train[B1_floor1_train < -72] <- 100
-
-B1_floor1_train[B1_floor1_train < -70] <- 100
-
-#change values of rest
-B1_floor_rest_train[B1_floor_rest_train < -99] <- 100
-
-
-
-#bind rows back together
-train_B1_wapcolumns <- bind_rows(B1_floor1_train, B1_floor_rest_train, B1_floor0_train)
-test_B1_wapcolumns <- bind_rows(B1_floor1_test, B1_floor_rest_test, B1_floor0_test)
-
-#remove the dataframes for the specific floors
-remove(B1_floor1_train, B1_floor_rest_train, B1_floor0_train, B1_floor1_test, B1_floor_rest_test, B1_floor0_test)
-
-#remove BUILDINGID, FLOOR, LAT & LONG
-train_B1_wapcolumns$BUILDINGID <-  NULL
-test_B1_wapcolumns$BUILDINGID <-  NULL
-
-train_B1_wapcolumns$FLOOR <- NULL
-test_B1_wapcolumns$FLOOR <- NULL
-
-
-train_B1_wapcolumns$LATITUDE <-  NULL
-test_B1_wapcolumns$LATITUDE <-  NULL
-
-
-train_B1_wapcolumns$LONGITUDE <-  NULL
-test_B1_wapcolumns$LONGITUDE <-  NULL
-
-
-#combine dataframe again and remove ID so later on rowvariance can be calculated more easily
-Building_1_train <- left_join(train_B1_wapcolumns, train_B1_yvars, by = "ID")
-Building_1_test <- left_join(test_B1_wapcolumns, test_B1_yvars, by = "ID")
-
-
-
-#add extra information for floor 1 in the trainset
-B1_F0_part <- Building_1_train %>% filter(FLOOR == 0 & 
-                                            LATITUDE < 4864920 & 
-                                            LATITUDE > 4864840 &
-                                            LONGITUDE > -7525 & 
-                                            LONGITUDE < -7475)
-
-
-
-B1_F1_part <- Building_1_train %>% filter(FLOOR == 1 & 
-                                            LATITUDE < 4864920 & 
-                                            LATITUDE > 4864860 &
-                                            LONGITUDE > -7450 & 
-                                            LONGITUDE < -7400)
-
-
-
-Building_1_train <- bind_rows(Building_1_train, B1_F0_part, B1_F0_part, B1_F0_part, 
-                              B1_F0_part, B1_F0_part, B1_F0_part, B1_F0_part, B1_F0_part, 
-                              B1_F0_part, B1_F0_part, B1_F0_part, B1_F1_part)
-
-
-#remove ID´s
-Building_1_train$ID <- NULL
-Building_1_test$ID <- NULL
-
-#split the trainingB1 in 2 again so the independent variables (WAPS) can be adjusted 
-train_B1_yvars <- Building_1_train[c((ncol(Building_1_train)-8):ncol(Building_1_train))]
-train_B1_wapcolumns <- Building_1_train[-c((ncol(Building_1_train)-8):ncol(Building_1_train))]
-
-#split the testB1 in 2 so the independent variables (WAPS) can be adjusted 
-test_B1_yvars <- Building_1_test[c((ncol(Building_1_test)-8):ncol(Building_1_test))]
-test_B1_wapcolumns <- Building_1_test[-c((ncol(Building_1_test)-8):ncol(Building_1_test))]
-
-
-#change weaks signals to no signal
-train_B1_wapcolumns[train_B1_wapcolumns == 100] <- -100
-test_B1_wapcolumns[test_B1_wapcolumns == 100] <- -100
-
-#change too strong signals to no signal
-train_B1_wapcolumns[train_B1_wapcolumns >= -30] <- -100
-
-#make values positive
-train_B1_wapcolumns <- 100 + train_B1_wapcolumns
-test_B1_wapcolumns <- 100 + test_B1_wapcolumns
-
-
-#combine dataframe again and remove the seperate parts
-Building_1_train <- bind_cols(train_B1_wapcolumns, train_B1_yvars)
-Building_1_test <- bind_cols(test_B1_wapcolumns, test_B1_yvars)
-
-#split the trainingB2 in 2 so the independent variables (WAPS) can be adjusted 
-train_B2_yvars <- Building_2_train[c((ncol(Building_2_train)-8):ncol(Building_2_train))]
-train_B2_wapcolumns <- Building_2_train[-c((ncol(Building_2_train)-8):ncol(Building_2_train))]
-
-
-#split the testB2 in 2 so the independent variables (WAPS) can be adjusted 
-test_B2_yvars <- Building_2_test[c((ncol(Building_2_test)-8):ncol(Building_2_test))]
-test_B2_wapcolumns <- Building_2_test[-c((ncol(Building_2_test)-8):ncol(Building_2_test))]
-
-
-
-#change weaks signals to no signal
-train_B2_wapcolumns[train_B2_wapcolumns <= -90] <- 100
-
-
-#change weaks signals to no signal
-train_B2_wapcolumns[train_B2_wapcolumns == 100] <- -100
-test_B2_wapcolumns[test_B2_wapcolumns == 100] <- -100
-
-#change too strong signals to no signal
-train_B2_wapcolumns[train_B2_wapcolumns >= -30] <- train_B2_wapcolumns[train_B2_wapcolumns >= -30] -30
-
-
-
-#make values positive
-train_B2_wapcolumns <- 100 + train_B2_wapcolumns
-test_B2_wapcolumns <- 100 + test_B2_wapcolumns
-
-
-
-#combine dataframe again and remove the seperate parts
-Building_2_train <- bind_cols(train_B2_wapcolumns, train_B2_yvars)
-Building_2_test <- bind_cols(test_B2_wapcolumns, test_B2_yvars)
 
 
 #create empty lists that will be used in the loop
@@ -268,10 +67,10 @@ y_list_test <- list()
 ########################################################################
 
 #how big should the data partition be?
-no_rows_partition <- 502
+no_rows_partition <- 2000
 
 #which values should be added as a dependent variable?
-y_names <- c("FLOOR", "LATITUDE", "LONGITUDE")
+y_names <- c("LONGITUDE", "LATITUDE")
 
 
 
@@ -320,6 +119,7 @@ for (i in 1:length(y_names)){
   
   
   
+
   #normalize rows in the train & test dataframe 
   throwaway_x_train <- as.data.frame(scale(t(throwaway_x_train)))
   throwaway_x_test <- as.data.frame(scale(t(throwaway_x_test)))       

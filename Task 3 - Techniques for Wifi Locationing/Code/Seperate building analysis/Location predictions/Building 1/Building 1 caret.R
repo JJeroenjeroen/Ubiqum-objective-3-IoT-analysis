@@ -18,12 +18,15 @@ source(file = "Building 1 preprocess.R")
 control_method <-"repeatedcv"
 control_folds <- 10
 control_repeats <- 1
-
+control_search <- "grid"
 
 fitControl <- trainControl(method = control_method,
                            number = control_folds,
-                           repeats = control_repeats)
+                           repeats = control_repeats,
+                           search = control_search)
 
+
+train_tuneGrid <- expand.grid(.k=c(11:20))
 
 
 
@@ -54,6 +57,7 @@ for (method in algorithms){
     throwaway_fit <- train(x = x_list_train[[y_names[i]]],
                            y = y_list_train[[y_names[i]]],
                            method = train_method,
+                           tuneGrid = train_tuneGrid,
                            trControl = fitControl)
     
     
@@ -101,4 +105,4 @@ for (method in algorithms){
 #store all predicted values in an RDS file
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles/Results")
 saveRDS(all_predicted_values,
-        file = paste(Sys.Date(), "BUilding 1"))
+        file = paste(Sys.Date(), "BUilding 1 location"))

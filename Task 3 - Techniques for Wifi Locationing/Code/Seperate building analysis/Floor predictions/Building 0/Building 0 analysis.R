@@ -16,7 +16,7 @@ source(file = "Building 0 caret.R")
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles/Results")
 
 #read results into R
-predictions <- readRDS("2019-03-15 Building 0")
+predictions <- readRDS("2019-03-18 Building 0 floor")
 
 
 #add all actual y values in 1 dataframe with the results

@@ -1,14 +1,14 @@
-setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Floor predictions/Building 0")
+setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Location predictions/Building 0")
 source(file = "Building 0 analysis.R")
-setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Floor predictions/Building 1")
+setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Location predictions/Building 1")
 source(file = "Building 1 analysis.R")
-setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Floor predictions/Building 2")
+setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Location predictions/Building 2")
 source(file = "Building 2 analysis.R")
 
 #read results into R
-predictions0 <- readRDS("2019-03-15 BUilding 0 total")
-predictions1 <- readRDS("2019-03-15 BUilding 1 total")
-predictions2 <- readRDS("2019-03-15 BUilding 2 total")
+predictions0 <- readRDS("2019-03-18 BUilding 0 total")
+predictions1 <- readRDS("2019-03-18 BUilding 1 total")
+predictions2 <- readRDS("2019-03-18 BUilding 2 total")
 
 
 #combine predictions
