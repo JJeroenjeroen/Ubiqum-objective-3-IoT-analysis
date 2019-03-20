@@ -102,9 +102,9 @@ B1_floor_rest_test <- test_B1_wapcolumns %>% filter(!((FLOOR == 1 &
 
 
 #change WAP values of specific part of floor 1
-B1_floor1_train[B1_floor1_train < -72] <- 100
+B1_floor1_train[B1_floor1_train < -99] <- 105
 
-B1_floor1_train[B1_floor1_train < -70] <- 100
+B1_floor0_train[B1_floor0_train < -99] <- 105
 
 #change values of rest
 B1_floor_rest_train[B1_floor_rest_train < -99] <- 100
@@ -180,7 +180,7 @@ train_B1_wapcolumns[train_B1_wapcolumns == 100] <- -100
 test_B1_wapcolumns[test_B1_wapcolumns == 100] <- -100
 
 #change too strong signals to no signal
-train_B1_wapcolumns[train_B1_wapcolumns >= -30] <- -100
+#train_B1_wapcolumns[train_B1_wapcolumns > -30] <- train_B1_wapcolumns[train_B1_wapcolumns > -30] -30
 
 #remove rows without variance in training B1 
 train_B1_yvars <- train_B1_yvars[-which(apply(train_B1_wapcolumns, 1, var) == 0), ]
@@ -188,8 +188,8 @@ train_B1_wapcolumns <- train_B1_wapcolumns[-which(apply(train_B1_wapcolumns, 1, 
 
 
 #make values positive
-train_B1_wapcolumns <- 100 + train_B1_wapcolumns
-test_B1_wapcolumns <- 100 + test_B1_wapcolumns
+#train_B1_wapcolumns <- 100 + train_B1_wapcolumns
+#test_B1_wapcolumns <- 100 + test_B1_wapcolumns
 
 #remove duplicate values
 train_B1_yvars <- train_B1_yvars[which(!duplicated(train_B1_wapcolumns)),]

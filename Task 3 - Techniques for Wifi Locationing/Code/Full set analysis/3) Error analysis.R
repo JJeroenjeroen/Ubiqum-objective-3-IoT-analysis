@@ -14,7 +14,7 @@ setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi
 
 #read results into R
 
-predictions <- readRDS("2019-03-15 predicted values3")
+predictions <- readRDS("2019-03-20 predicted values3")
 
 
 #add all actual y values in 1 dataframe with the results
@@ -37,12 +37,14 @@ confusionMatrix(data = all_y_values$svmPoly_predict_FLOOR, all_y_values$FLOOR)
 confusionMatrix(data = all_y_values$svmPoly_predict_BUILDING, all_y_values$BUILDING)
 
 
+all_y_values$errorBUILD <- as.numeric(all_y_values$BUILDINGID) - as.numeric(all_y_values$knn_predict_BUILDINGID)
+
+all_y_values$errorBUILD
+
 #plot results
 ggplot(all_y_values) +
   
-  geom_point((aes(x = LONGITUDE, y = LATITUDE))) +
-  geom_point((aes(x = knn_predict_LONGITUDE, y = knn_predict_LATITUDE, colour = knn_predict_FLOOR))) +
-  facet_wrap("FLOOR")
+  geom_point((aes(x = LONGITUDE, y = LATITUDE, colour = errorBUILD)))
 
 
 all_y_values$longerr <- all_y_values$knn_predict_LATITUDE - all_y_values$LATITUDE
@@ -54,3 +56,6 @@ all_y_values_err <- all_y_values %>% filter(abs(longerr) > 15)
 ggplot(all_y_values_err) +
   
   geom_point((aes(x = LONGITUDE, y = LATITUDE)))
+
+ggplot(all_y_values)
+

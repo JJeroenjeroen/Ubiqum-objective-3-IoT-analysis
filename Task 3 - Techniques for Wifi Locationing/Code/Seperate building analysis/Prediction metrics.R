@@ -30,7 +30,7 @@ source(file = "Building 1 analysis.R")
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Location predictions/Building 2")
 source(file = "Building 2 analysis.R")
 
-
+setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles/Results/total")
 #read results into R
 Building0_floor <- readRDS("2019-03-18 BUilding 0 total")
 Building1_floor <- readRDS("2019-03-18 BUilding 1 total")
@@ -61,3 +61,12 @@ postResample(all_y_values$knn_predict_LONGITUDE, all_y_values$LONGITUDE)
 
 ggplot(all_y_values) +
   geom_point(aes(x =knn_predict_LONGITUDE , y = knn_predict_LATITUDE))
+
+
+all_y_values$Longerror <- all_y_values$knn_predict_LONGITUDE - all_y_values$LONGITUDE
+all_y_values$Laterror <- all_y_values$knn_predict_LATITUDE - all_y_values$LATITUDE
+
+all_y_values$Longerror <- all_y_values$Longerror^2
+all_y_values$Laterror <- all_y_values$Laterror^2 
+all_y_values$dist <- all_y_values$Laterror + all_y_values$Longerror 
+mean(sqrt(all_y_values$dist))

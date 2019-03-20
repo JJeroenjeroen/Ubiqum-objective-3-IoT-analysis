@@ -28,7 +28,7 @@ test_B2_wapcolumns <- Building_2_test[-c((ncol(Building_2_test)-8):ncol(Building
 
 
 #change weaks signals to no signal
-train_B2_wapcolumns[train_B2_wapcolumns <= -90] <- 100
+train_B2_wapcolumns[train_B2_wapcolumns <= -82] <- 100
 
 
 #change weaks signals to no signal
@@ -36,13 +36,13 @@ train_B2_wapcolumns[train_B2_wapcolumns == 100] <- -100
 test_B2_wapcolumns[test_B2_wapcolumns == 100] <- -100
 
 #change too strong signals to no signal
-train_B2_wapcolumns[train_B2_wapcolumns >= -30] <- train_B2_wapcolumns[train_B2_wapcolumns >= -30] -30
+train_B2_wapcolumns[train_B2_wapcolumns > -30] <- train_B2_wapcolumns[train_B2_wapcolumns > -30] - 35
 
 
 
 #make values positive
-train_B2_wapcolumns <- 100 + train_B2_wapcolumns
-test_B2_wapcolumns <- 100 + test_B2_wapcolumns
+#train_B2_wapcolumns <- 100 + train_B2_wapcolumns
+#test_B2_wapcolumns <- 100 + test_B2_wapcolumns
 
 
 #remove rows without variance in both test and training B2 
@@ -122,7 +122,7 @@ for (i in 1:length(y_names)){
          testing[ , grepl( "WAP" , names(testing))])
   
   
-  
+ 
   #normalize rows in the train & test dataframe 
   throwaway_x_train <- as.data.frame(scale(t(throwaway_x_train)))
   throwaway_x_test <- as.data.frame(scale(t(throwaway_x_test)))       

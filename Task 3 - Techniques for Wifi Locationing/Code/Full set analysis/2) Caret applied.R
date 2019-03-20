@@ -29,7 +29,7 @@ fitControl <- trainControl(method = control_method,
 ############################################################################
 
 #which algorithms should be used?
-algorithms <- c("knn")
+algorithms <- c("svmLinear")
 
 #create an empty list that will contain the ¨predictions of the loop
 all_predicted_values <- list()

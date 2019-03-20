@@ -28,7 +28,7 @@ train_B0_wapcolumns <- train_B0_wapcolumns[-which(apply(train_B0_wapcolumns, 1, 
 
 
 #change weaks signals to no signal
-train_B0_wapcolumns[train_B0_wapcolumns <= -90] <- 100
+train_B0_wapcolumns[train_B0_wapcolumns <= -99] <- 100
 
 
 #change weaks signals to no signal
@@ -36,14 +36,7 @@ train_B0_wapcolumns[train_B0_wapcolumns == 100] <- -100
 test_B0_wapcolumns[test_B0_wapcolumns == 100] <- -100
 
 #change too strong signals to no signal
-train_B0_wapcolumns[train_B0_wapcolumns >= -30] <- -100
-
-
-
-
-#make values positive
-train_B0_wapcolumns <- 100 + train_B0_wapcolumns
-test_B0_wapcolumns <- 100 + test_B0_wapcolumns
+train_B0_wapcolumns[train_B0_wapcolumns > -30] <- train_B0_wapcolumns[train_B0_wapcolumns > -30] -30
 
 
 #remove duplicate values
@@ -120,6 +113,8 @@ for (i in 1:length(y_names)){
   
   
 
+  
+  
   #normalize rows in the train & test dataframe 
   throwaway_x_train <- as.data.frame(scale(t(throwaway_x_train)))
   throwaway_x_test <- as.data.frame(scale(t(throwaway_x_test)))       

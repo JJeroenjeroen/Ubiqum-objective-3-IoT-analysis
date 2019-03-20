@@ -108,15 +108,14 @@ B1_floor_rest_train <- train_set_wapcolumns_1 %>% filter(!((FLOOR == 1 &
                                                              LATITUDE > 4864835 &
                                                              LATITUDE < 4864905))
 
-
 #change WAP values of specific part of floor 1
 B1_floor1_train[B1_floor1_train < -75] <- 100
 
 #change WAP values of floor 0
-B1_floor0_train[B1_floor0_train < -90] <- 100
+B1_floor0_train[B1_floor0_train < -75] <- 100
 
 #change values of rest
-B1_floor_rest_train[B1_floor_rest_train < -90] <- 100
+B1_floor_rest_train[B1_floor_rest_train < -75] <- 100
 
 
 train_set_wapcolumns_1 <- bind_rows(B1_floor1_train, B1_floor_rest_train, B1_floor0_train)
@@ -163,7 +162,7 @@ test_set_wapcolumns <- wifi_test[-c((ncol(wifi_test)-8):ncol(wifi_test))]
 
 
 
-#change weaks signals to no signal
+#change to minus 
 
 train_set_wapcolumns[train_set_wapcolumns == 100] <- -100
 test_set_wapcolumns[test_set_wapcolumns == 100] <- -100
@@ -202,7 +201,7 @@ y_list_test <- list()
 no_rows_partition <- 1000
 
 #which values should be added as a dependent variable?
-y_names <- c("BUILDINGID", "FLOOR", "LATITUDE", "LONGITUDE")
+y_names <- c("BUILDINGID", "LONGITUDE", "LATITUDE")
 
 
 
