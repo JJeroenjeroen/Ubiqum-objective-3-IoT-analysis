@@ -1,5 +1,5 @@
 #####################################################
-# Date:      06-03-2019                             #
+# Date:      10-03-2019                             #
 # Author:    Jeroen Meij                            #
 # File:      Wifi localization modeling             #
 # Version:   2.0                                    #    
@@ -21,50 +21,34 @@ library(caret)
 library(dplyr)
 library(tidyr)
 library(rlist)
-library(kernlab)
+
 
 #import data
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles")
 wifi_train <- read.csv("trainingData.csv", header=TRUE, row.names=NULL, sep = ",")
 wifi_test <- read.csv("validationData.csv", header=TRUE, row.names=NULL, sep = ",")
 
-
-wifi_train$longlatuser <- paste(wifi_train$LONGITUDE, wifi_train$LATITUDE, wifi_train$USERID, wifi_train$FLOOR)
-wifi_train = wifi_train[order(wifi_train[,'longlatuser'],-wifi_train[,'TIMESTAMP']),]
-wifi_train = wifi_train[!duplicated(wifi_train$longlatuser),]
-
-wifi_train$longlatuser <- NULL
-
 #Preprocessing
 #split the trainingset in 2 so the independent variables (WAPS) can be adjusted 
 train_set_yvars <- wifi_train[c((ncol(wifi_train)-8):ncol(wifi_train))]
 train_set_wapcolumns <- wifi_train[-c((ncol(wifi_train)-8):ncol(wifi_train))]
 
-
-#split the testset in 2 so the independent variables (WAPS) can be adjusted 
-test_set_yvars <- wifi_test[c((ncol(wifi_test)-8):ncol(wifi_test))]
-test_set_wapcolumns <- wifi_test[-c((ncol(wifi_test)-8):ncol(wifi_test))]
-
 #create dataframes for the BUILDINGID & floor specifically
 building_floor_train <- train_set_yvars %>% select(BUILDINGID, FLOOR)
-building_floor_test <- test_set_yvars %>% select(BUILDINGID, FLOOR)
+
+#create dataframes for the Latitude & Longitude specifically
 Long_lat_train <- train_set_yvars %>% select(LONGITUDE, LATITUDE)
-Long_lat_test <- test_set_yvars %>% select(LONGITUDE, LATITUDE)
 
-#add BUILDINGID & floor for later preprocessing
+#add building id & floor to the wapcolumn set for later preprocessing
 train_set_wapcolumns <- bind_cols(train_set_wapcolumns, building_floor_train)
-test_set_wapcolumns <- bind_cols(test_set_wapcolumns, building_floor_test)
 
-#add longitude and latitude to set
+#add longitude and latitude to the wapcolumn set for later preprocessing
 train_set_wapcolumns <- bind_cols(train_set_wapcolumns, Long_lat_train)
-test_set_wapcolumns <- bind_cols(test_set_wapcolumns, Long_lat_test)
 
 
-#add ID to train and test sets
+#add ID to train and test sets (+101 because it will otherwise interfere with 100 dBm value later on)
 train_set_yvars$ID <- seq.int(nrow(train_set_yvars)) + 101
 train_set_wapcolumns$ID <- seq.int(nrow(train_set_wapcolumns)) + 101
-test_set_yvars$ID <- seq.int(nrow(test_set_yvars)) + 101
-test_set_wapcolumns$ID <- seq.int(nrow(test_set_wapcolumns)) + 101
 
 
 #split sets depending on BUILDINGID
@@ -72,18 +56,13 @@ train_set_wapcolumns_0 <- train_set_wapcolumns %>% filter(BUILDINGID == 0)
 train_set_wapcolumns_1 <- train_set_wapcolumns %>% filter(BUILDINGID == 1)
 train_set_wapcolumns_2 <- train_set_wapcolumns %>% filter(BUILDINGID == 2)
 
-test_set_wapcolumns_0 <- test_set_wapcolumns %>% filter(BUILDINGID == 0) 
-test_set_wapcolumns_1 <- test_set_wapcolumns %>% filter(BUILDINGID == 1)
-test_set_wapcolumns_2 <- test_set_wapcolumns %>% filter(BUILDINGID == 2)
-
-
 #change weaks signals to no signal
 train_set_wapcolumns_0[train_set_wapcolumns_0 <= -90] <- 100
 train_set_wapcolumns_2[train_set_wapcolumns_2 <= -90] <- 100
 
 
 
-#create specific dataframe for floors of building 1
+#create specific dataframe for specific parts of the floors for building 1
 B1_floor1_train <- train_set_wapcolumns_1 %>% filter(FLOOR == 1 &
                                                        LONGITUDE > -7530 &
                                                        LONGITUDE < -7450 &
@@ -111,63 +90,50 @@ B1_floor_rest_train <- train_set_wapcolumns_1 %>% filter(!((FLOOR == 1 &
 #change WAP values of specific part of floor 1
 B1_floor1_train[B1_floor1_train < -75] <- 100
 
-#change WAP values of floor 0
+#change WAP values of of specific part of floor 0
 B1_floor0_train[B1_floor0_train < -75] <- 100
 
-#change values of rest
+#change values for the rest of the floors
 B1_floor_rest_train[B1_floor_rest_train < -75] <- 100
 
-
+#bind the rows of the specific floor parts back together
 train_set_wapcolumns_1 <- bind_rows(B1_floor1_train, B1_floor_rest_train, B1_floor0_train)
 
 
 #bind rows back together
 train_set_wapcolumns <- bind_rows(train_set_wapcolumns_0, train_set_wapcolumns_1, train_set_wapcolumns_2)
-test_set_wapcolumns <- bind_rows(test_set_wapcolumns_0, test_set_wapcolumns_1, test_set_wapcolumns_2)
 
 #remove BUILDINGID 
 train_set_wapcolumns$BUILDINGID <-  NULL
-test_set_wapcolumns$BUILDINGID <-  NULL
 
+#remove FLOOR
 train_set_wapcolumns$FLOOR <- NULL
-test_set_wapcolumns$FLOOR <- NULL
 
-
+#remove LATITUDE
 train_set_wapcolumns$LATITUDE <-  NULL
-test_set_wapcolumns$LATITUDE <-  NULL
 
-
+#remove LONGITUDE
 train_set_wapcolumns$LONGITUDE <-  NULL
-test_set_wapcolumns$LONGITUDE <-  NULL
-
 
 #combine dataframe again and remove ID so later on rowvariance can be calculated more easily
 wifi_train <- left_join(train_set_wapcolumns, train_set_yvars, by = "ID")
-wifi_test <- left_join(test_set_wapcolumns, test_set_yvars, by = "ID")
 
 #remove ID´s
 wifi_train$ID <- NULL
-wifi_test$ID <- NULL
-
 
 #split the trainingset in 2 so the independent variables (WAPS) can be adjusted 
 train_set_yvars <- wifi_train[c((ncol(wifi_train)-8):ncol(wifi_train))]
 train_set_wapcolumns <- wifi_train[-c((ncol(wifi_train)-8):ncol(wifi_train))]
 
-
 #split the testset in 2 so the independent variables (WAPS) can be adjusted 
 test_set_yvars <- wifi_test[c((ncol(wifi_test)-8):ncol(wifi_test))]
 test_set_wapcolumns <- wifi_test[-c((ncol(wifi_test)-8):ncol(wifi_test))]
 
-
-
-
-#change to minus 
-
+#change to 100's to minus 100 
 train_set_wapcolumns[train_set_wapcolumns == 100] <- -100
 test_set_wapcolumns[test_set_wapcolumns == 100] <- -100
 
-
+#deal with values that are higher than 30
 train_set_wapcolumns[train_set_wapcolumns >= -30] <- train_set_wapcolumns[train_set_wapcolumns >= -30] -30
 
 
@@ -175,7 +141,7 @@ train_set_wapcolumns[train_set_wapcolumns >= -30] <- train_set_wapcolumns[train_
 train_set_yvars <- train_set_yvars[-which(apply(train_set_wapcolumns, 1, var) == 0), ]
 train_set_wapcolumns <- train_set_wapcolumns[-which(apply(train_set_wapcolumns, 1, var) == 0), ]
 
-
+#make all values positive
 train_set_wapcolumns <- 100 + train_set_wapcolumns
 test_set_wapcolumns <- 100 + test_set_wapcolumns
 
@@ -183,9 +149,13 @@ test_set_wapcolumns <- 100 + test_set_wapcolumns
 wifi_train <- bind_cols(train_set_wapcolumns, train_set_yvars)
 wifi_test <- bind_cols(test_set_wapcolumns, test_set_yvars)
 
-
 #remove the dataframes that wont be used anymore
-remove(train_set_yvars, train_set_wapcolumns)
+remove(train_set_yvars, train_set_wapcolumns, 
+       B1_floor_rest_train, B1_floor0_train, 
+       B1_floor1_train, Long_lat_train, 
+       test_set_wapcolumns, test_set_yvars,
+       building_floor_train, train_set_wapcolumns_0,
+       train_set_wapcolumns_1, train_set_wapcolumns_2)
 
 #create empty lists that will be used in the loop
 x_list_train <- list()
@@ -204,18 +174,12 @@ no_rows_partition <- 1000
 y_names <- c("BUILDINGID", "LONGITUDE", "LATITUDE")
 
 
-
 #change class of building and floor to factor
 wifi_train$BUILDINGID <- as.factor(wifi_train$BUILDINGID)
 wifi_train$FLOOR <- as.factor(wifi_train$FLOOR)
 
 wifi_test$BUILDINGID <- as.factor(wifi_test$BUILDINGID)
 wifi_test$FLOOR <- as.factor(wifi_test$FLOOR)
-
-
-#change unix time variable to actual datetime
-wifi_train$DateTime <- anytime(wifi_train$TIMESTAMP)
-wifi_test$DateTime <- anytime(wifi_test$TIMESTAMP)
 
 
 #for loop that creates smaller data frames for each data dependent variable
@@ -263,8 +227,7 @@ for (i in 1:length(y_names)){
   x_list_test[[y_names[i]]] <- throwaway_x_test
   y_list_test[y_names[i]] <- testing[y_names[i]]
   
-  remove(throwaway_x_train)
-  remove(throwaway_x_test)
-  remove(training)
-  remove(testing)
+  remove(train_id, throwaway_x_train, throwaway_x_test, training, testing)
 }
+
+remove(wifi_train, wifi_test)
