@@ -12,37 +12,37 @@
 
 #Run scripts that train and test a model on predicting floors  
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Floor predictions/Building 0")
-source(file = "Building 0 analysis.R")
+source(file = "3) Building 0 analysis.R")
 
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Floor predictions/Building 1")
-source(file = "Building 1 analysis.R")
+source(file = "3) Building 1 analysis.R")
 
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Floor predictions/Building 2")
-source(file = "Building 2 analysis.R")
+source(file = "3) Building 2 analysis.R")
 
 #Run scripts that train and test a model on predicting longitude and latitude
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Location predictions/Building 0")
-source(file = "Building 0 analysis.R")
+source(file = "3) Building 0 analysis.R")
 
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Location predictions/Building 1")
-source(file = "Building 1 analysis.R")
+source(file = "3) Building 1 analysis.R")
 
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Location predictions/Building 2")
-source(file = "Building 2 analysis.R")
+source(file = "3) Building 2 analysis.R")
 
 
 #change working directory to map where all results are stalled
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles/Results/total")
 
 #read results floor predictions into R
-Building0_floor <- readRDS("2019-03-18 BUilding 0 total")
-Building1_floor <- readRDS("2019-03-18 BUilding 1 total")
-Building2_floor <- readRDS("2019-03-18 BUilding 2 total")
+Building0_floor <- readRDS(paste(Sys.Date(), "BUilding 0 total"))
+Building1_floor <- readRDS(paste(Sys.Date(), "BUilding 1 total"))
+Building2_floor <- readRDS(paste(Sys.Date(), "BUilding 2 total"))
 
 #read results latitude and longitude predictions into R
-Building0_location <- readRDS("2019-03-19 BUilding 0 location")
-Building1_location <- readRDS("2019-03-19 BUilding 1 location")
-Building2_location <- readRDS("2019-03-19 BUilding 2 location")
+Building0_location <- readRDS(paste(Sys.Date(), "BUilding 0 location"))
+Building1_location <- readRDS(paste(Sys.Date(), "BUilding 1 location"))
+Building2_location <- readRDS(paste(Sys.Date(), "BUilding 2 location"))
 
 #combine all seperate floor predictions to 1 dataframe 
 all_y_values <- bind_rows(Building0_floor, 

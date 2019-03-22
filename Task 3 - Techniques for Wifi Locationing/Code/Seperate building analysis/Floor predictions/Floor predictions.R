@@ -1,46 +1,27 @@
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Floor predictions/Building 0")
-source(file = "Building 0 analysis.R")
+source(file = "3) Building 0 analysis.R")
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Floor predictions/Building 1")
-source(file = "Building 1 analysis.R")
+source(file = "3) Building 1 analysis.R")
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Floor predictions/Building 2")
-source(file = "Building 2 analysis.R")
+source(file = "3) Building 2 analysis.R")
+
+
+
+#change working directory to map where all results are stalled
+setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles/Results/total")
 
 #read results into R
-predictions0 <- readRDS("2019-03-15 BUilding 0 total")
-predictions1 <- readRDS("2019-03-15 BUilding 1 total")
-predictions2 <- readRDS("2019-03-15 BUilding 2 total")
+predictions0 <- readRDS(paste(Sys.Date(), "BUilding 0 total"))
+predictions1 <- readRDS(paste(Sys.Date(), "BUilding 1 total"))
+predictions2 <- readRDS(paste(Sys.Date(), "BUilding 2 total"))
 
 
 #combine predictions
 all_y_values <- bind_rows(predictions0, predictions1, predictions2)
 
-
+#Turn floor into factor variable
 all_y_values$knn_predict_FLOOR <- as.factor(all_y_values$knn_predict_FLOOR)
 all_y_values$FLOOR <- as.factor(all_y_values$FLOOR)
 
-#Confusion matrices of the floors and buildings
+#Confusion matrix of the floors
 confusionMatrix(data = all_y_values$knn_predict_FLOOR, all_y_values$FLOOR)
-
-postResample(all_y_values$knn_predict_LATITUDE, all_y_values$LATITUDE)
-postResample(all_y_values$knn_predict_LONGITUDE, all_y_values$LONGITUDE)
-
-ggplot(all_y_values) +
-  geom_point(aes(x = knn_predict_LONGITUDE, y = knn_predict_LATITUDE))
-
-
-ggplot(all_y_values) +
-  geom_density(aes(x = knn_predict_LONGITUDE - LONGITUDE), fill = "red", alpha = 0.3)
-
-
-ggplot(all_y_values) +
-  geom_density(aes(x = knn_predict_LATITUDE - LATITUDE), fill = "blue", alpha = 0.3) 
-
-  
-ggplot(all_y_values) +
-  geom_density(aes(x = knn_predict_LONGITUDE - LONGITUDE), fill = "red", alpha = 0.3) +
-  geom_density(aes(x = knn_predict_LATITUDE - LATITUDE), fill = "blue", alpha = 0.3) 
-
-
-
-
-errors_lat <- all_y_values$knn_predict_LATITUDE - all_y_values$LATITUDE

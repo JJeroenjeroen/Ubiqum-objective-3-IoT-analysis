@@ -6,17 +6,18 @@
 #####################################################
 
 
-#This file will give the results and plot the predictions to see where the errors occur  
+#This file store all floor predictions for building 2 in a dataframe with the actual values.  
 #For more information, visit http://archive.ics.uci.edu/ml/datasets/UJIIndoorLoc
 #########################################################################################
-setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Floor predictions/Building 1")
-source(file = "Building 1 caret.R")
+setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Floor predictions/Building 2")
+source(file = "2) Building 2 caret.R")
+
 
 #set working directory to get the resultss
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles/Results")
 
 #read results into R
-predictions <- readRDS("2019-03-18 Building 1 floor")
+predictions <- readRDS(paste(Sys.Date(), "Building 2 floor"))
 
 
 #add all actual y values in 1 dataframe with the results
@@ -29,4 +30,6 @@ all_y_values <- left_join(y_df_test, predictions, by = "ID")
 #store all y values:
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles/Results/total")
 saveRDS(all_y_values,
-        file = paste(Sys.Date(), "BUilding 1", "total"))
+        file = paste(Sys.Date(), "BUilding 2", "total"))
+
+

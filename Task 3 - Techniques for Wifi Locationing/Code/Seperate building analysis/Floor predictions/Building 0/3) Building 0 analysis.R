@@ -6,17 +6,17 @@
 #####################################################
 
 
-#This file will give the results and plot the predictions to see where the errors occur  
+#This file will give store the results that were gathered when modeling floors for building 0
 #For more information, visit http://archive.ics.uci.edu/ml/datasets/UJIIndoorLoc
 #########################################################################################
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Floor predictions/Building 0")
-source(file = "Building 0 caret.R")
+source(file = "2) Building 0 caret.R")
 
-#set working directory to get the resultss
+#set working directory to get the results
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles/Results")
 
 #read results into R
-predictions <- readRDS("2019-03-18 Building 0 floor")
+predictions <- readRDS(paste(Sys.Date(), "Building 0 floor"))
 
 
 #add all actual y values in 1 dataframe with the results
