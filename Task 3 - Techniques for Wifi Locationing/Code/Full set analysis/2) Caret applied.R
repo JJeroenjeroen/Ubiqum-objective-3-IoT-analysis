@@ -1,8 +1,8 @@
 #####################################################
-# Date:      06-03-2019                             #
+# Date:      24-03-2019                             #
 # Author:    Jeroen Meij                            #
 # File:      Wifi localization modeling             #
-# Version:   2.0                                    #    
+# Version:   final                                  #    
 #####################################################
 
 
@@ -10,11 +10,12 @@
 #This file will create the train various models and save the results in a RDS file  
 #For more information, visit http://archive.ics.uci.edu/ml/datasets/UJIIndoorLoc
 #########################################################################################
+setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Full set analysis")
+source(file = "1) Data setup.R")
 
 #set cross validation parameters
 control_method <-"repeatedcv"
 control_folds <- 10
-
 control_repeats <- 1
 
 

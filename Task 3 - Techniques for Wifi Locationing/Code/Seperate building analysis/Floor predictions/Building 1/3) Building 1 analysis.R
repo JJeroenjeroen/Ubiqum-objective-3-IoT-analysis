@@ -22,9 +22,7 @@ predictions <- readRDS(paste(Sys.Date(), "Building 1 floor"))
 #add all actual y values in 1 dataframe with the results
 predictions <- data.frame(predictions)
 y_df_test <- data.frame(y_list_test)
-predictions$ID <- seq.int(nrow(predictions))
-y_df_test$ID <- seq.int(nrow(y_df_test))
-all_y_values <- left_join(y_df_test, predictions, by = "ID")
+all_y_values <- bind_cols(y_df_test, predictions)
 
 #store all y values:
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles/Results/total")

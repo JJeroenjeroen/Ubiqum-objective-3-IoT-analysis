@@ -1,8 +1,8 @@
 #####################################################
-# Date:      19-03-2019                             #
+# Date:      24-03-2019                             #
 # Author:    Jeroen Meij                            #
 # File:      Wifi localization modeling             #
-# Version:   2.0                                    #    
+# Version:   final                                  #    
 #####################################################
 
 
@@ -73,42 +73,39 @@ postResample(all_y_values$knn_predict_LATITUDE, all_y_values$LATITUDE)
 postResample(all_y_values$knn_predict_LONGITUDE, all_y_values$LONGITUDE)
 
 
-#plot predicted Longitude and Latitude values
-ggplot(all_y_values) +
-  geom_point(aes(x =knn_predict_LONGITUDE , y = knn_predict_LATITUDE))
-
-
+#generate Longitude and Latitude errors
 all_y_values$Longerror <- (all_y_values$knn_predict_LONGITUDE -
                              all_y_values$LONGITUDE)
 
 all_y_values$Laterror <- (all_y_values$knn_predict_LATITUDE - 
                             all_y_values$LATITUDE) 
 
-
+#provide the mean circular distance
 all_y_values$Longerror <- all_y_values$Longerror^2
 all_y_values$Laterror <- all_y_values$Laterror^2 
 all_y_values$dist <- all_y_values$Laterror + all_y_values$Longerror 
 mean(sqrt(all_y_values$dist))
+
+#generate lon/lat combination error 
 all_y_values$dist <- (sqrt(all_y_values$dist))
+
 
 ggplot(all_y_values) +
   geom_histogram(aes(x = dist),
                  bins = 90,
                  colour = "black",
-                 fill = "lightblue") +
-  bbc_style()
+                 fill = "lightblue")
 
 
 ggplot(all_y_values) +
   geom_histogram(aes(x = sqrt(Longerror)),
                  bins = 90,
                  colour = "black",
-                 fill = "lightblue") +
-  bbc_style()
+                 fill = "lightblue")
+
 
 ggplot(all_y_values) +
   geom_histogram(aes(x = sqrt(Laterror)),
                  bins = 90,
                  colour = "black",
-                 fill = "lightblue") +
-  bbc_style()
+                 fill = "lightblue")

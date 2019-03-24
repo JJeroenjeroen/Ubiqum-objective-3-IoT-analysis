@@ -1,14 +1,18 @@
 #####################################################
-# Date:      06-03-2019                             #
+# Date:      24-03-2019                             #
 # Author:    Jeroen Meij                            #
 # File:      Wifi localization modeling             #
-# Version:   2.0                                    #    
+# Version:   final                                  #    
 #####################################################
 
 
 #This file will give the results and plot the predictions to see where the errors occur  
 #For more information, visit http://archive.ics.uci.edu/ml/datasets/UJIIndoorLoc
 #########################################################################################
+setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Full set analysis")
+source(file = "2) Caret applied.R")
+
+
 #set working directory to get the resultss
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Excel datafiles/Results")
 

@@ -1,8 +1,8 @@
 #####################################################
-# Date:      14-03-2019                             #
+# Date:      24-03-2019                             #
 # Author:    Jeroen Meij                            #
 # File:      Wifi localization modeling             #
-# Version:   2.0                                    #    
+# Version:   final                                  #    
 #####################################################
 
 
@@ -20,13 +20,18 @@ train_B0_wapcolumns <- Building_0_train[-c((ncol(Building_0_train)-8):
 
 
 #split the testB0 in 2 so the independent variables (WAPS) can be adjusted 
-test_B0_yvars <- Building_0_test[c((ncol(Building_0_test)-8):ncol(Building_0_test))]
-test_B0_wapcolumns <- Building_0_test[-c((ncol(Building_0_test)-8):ncol(Building_0_test))]
+test_B0_yvars <- Building_0_test[c((ncol(Building_0_test)-8):
+                                     ncol(Building_0_test))]
+test_B0_wapcolumns <- Building_0_test[-c((ncol(Building_0_test)-8):
+                                           ncol(Building_0_test))]
 
 
 #remove rows without variance in both test and training B0 
-train_B0_yvars <- train_B0_yvars[-which(apply(train_B0_wapcolumns, 1, var) == 0), ]
-train_B0_wapcolumns <- train_B0_wapcolumns[-which(apply(train_B0_wapcolumns, 1, var) == 0), ]
+train_B0_yvars <- train_B0_yvars[-which(apply(
+  train_B0_wapcolumns, 1, var) == 0), ]
+
+train_B0_wapcolumns <- train_B0_wapcolumns[-which(apply(
+  train_B0_wapcolumns, 1, var) == 0), ]
 
 
 #change weaks signals to no signal

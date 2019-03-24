@@ -1,8 +1,8 @@
 #####################################################
-# Date:      14-03-2019                             #
+# Date:      24-03-2019                             #
 # Author:    Jeroen Meij                            #
 # File:      Wifi localization modeling             #
-# Version:   2.0                                    #    
+# Version:   final                                  #    
 #####################################################
 
 
@@ -13,17 +13,22 @@ setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi
 source(file = "Setup.R")
 
 #remove files building 0 & 1
-remove(Building_0_test, Building_0_train, Building_1_test, Building_1_train)
+remove(Building_0_test, Building_0_train, 
+       Building_1_test, Building_1_train)
 
 
 #split the trainingB2 in 2 so the independent variables (WAPS) can be adjusted 
-train_B2_yvars <- Building_2_train[c((ncol(Building_2_train)-8):ncol(Building_2_train))]
-train_B2_wapcolumns <- Building_2_train[-c((ncol(Building_2_train)-8):ncol(Building_2_train))]
+train_B2_yvars <- Building_2_train[c((ncol(Building_2_train)-8):
+                                       ncol(Building_2_train))]
+train_B2_wapcolumns <- Building_2_train[-c((ncol(Building_2_train)-8):
+                                             ncol(Building_2_train))]
 
 
 #split the testB2 in 2 so the independent variables (WAPS) can be adjusted 
-test_B2_yvars <- Building_2_test[c((ncol(Building_2_test)-8):ncol(Building_2_test))]
-test_B2_wapcolumns <- Building_2_test[-c((ncol(Building_2_test)-8):ncol(Building_2_test))]
+test_B2_yvars <- Building_2_test[c((ncol(Building_2_test)-8):
+                                     ncol(Building_2_test))]
+test_B2_wapcolumns <- Building_2_test[-c((ncol(Building_2_test)-8):
+                                           ncol(Building_2_test))]
 
 
 
@@ -36,28 +41,48 @@ train_B2_wapcolumns[train_B2_wapcolumns == 100] <- -100
 test_B2_wapcolumns[test_B2_wapcolumns == 100] <- -100
 
 #change too strong signals to no signal
-train_B2_wapcolumns[train_B2_wapcolumns > -30] <- train_B2_wapcolumns[train_B2_wapcolumns > -30] - 35
-
-
-
-#make values positive
-#train_B2_wapcolumns <- 100 + train_B2_wapcolumns
-#test_B2_wapcolumns <- 100 + test_B2_wapcolumns
+train_B2_wapcolumns[train_B2_wapcolumns > -30] <- train_B2_wapcolumns[
+  train_B2_wapcolumns > -30] - 35
 
 
 #remove rows without variance in both test and training B2 
-train_B2_yvars <- train_B2_yvars[-which(apply(train_B2_wapcolumns, 1, var) == 0), ]
-train_B2_wapcolumns <- train_B2_wapcolumns[-which(apply(train_B2_wapcolumns, 1, var) == 0), ]
+train_B2_yvars <- train_B2_yvars[-which(apply(
+  train_B2_wapcolumns, 1, var) == 0), ]
+
+train_B2_wapcolumns <- train_B2_wapcolumns[-which(apply(
+  train_B2_wapcolumns, 1, var) == 0), ]
 
 #remove duplicate values
-train_B2_yvars <- train_B2_yvars[which(!duplicated(train_B2_wapcolumns)),]
-train_B2_wapcolumns <- train_B2_wapcolumns[which(!duplicated(train_B2_wapcolumns)),]
+train_B2_yvars <- train_B2_yvars[which(
+  !duplicated(train_B2_wapcolumns)),]
+
+train_B2_wapcolumns <- train_B2_wapcolumns[which(
+  !duplicated(train_B2_wapcolumns)),]
 
 
 #combine dataframe again and remove the seperate parts
 Building_2_train <- bind_cols(train_B2_wapcolumns, train_B2_yvars)
 Building_2_test <- bind_cols(test_B2_wapcolumns, test_B2_yvars)
 
+
+#change class of building and floor to factor
+Building_2_train$BUILDINGID <- as.factor(Building_2_train$BUILDINGID)
+Building_2_train$FLOOR <- as.factor(Building_2_train$FLOOR)
+
+Building_2_test$BUILDINGID <- as.factor(Building_2_test$BUILDINGID)
+Building_2_test$FLOOR <- as.factor(Building_2_test$FLOOR)
+
+
+#change unix time variable to actual datetime
+Building_2_train$DateTime <- anytime(Building_2_train$TIMESTAMP)
+Building_2_test$DateTime <- anytime(Building_2_test$TIMESTAMP)
+
+
+
+#remove Df´s that won´t be used anymore
+remove(wifi_train, wifi_test,
+       test_B2_wapcolumns, test_B2_yvars,
+       train_B2_wapcolumns, train_B2_yvars)
 
 
 #create empty lists that will be used in the loop
@@ -77,27 +102,13 @@ no_rows_partition <- 2000
 y_names <- c("LONGITUDE", "LATITUDE")
 
 
-
-#change class of building and floor to factor
-Building_2_train$BUILDINGID <- as.factor(Building_2_train$BUILDINGID)
-Building_2_train$FLOOR <- as.factor(Building_2_train$FLOOR)
-
-Building_2_test$BUILDINGID <- as.factor(Building_2_test$BUILDINGID)
-Building_2_test$FLOOR <- as.factor(Building_2_test$FLOOR)
-
-
-#change unix time variable to actual datetime
-Building_2_train$DateTime <- anytime(Building_2_train$TIMESTAMP)
-Building_2_test$DateTime <- anytime(Building_2_test$TIMESTAMP)
-
-
 #for loop that creates smaller data frames for each data dependent variable
 for (i in 1:length(y_names)){
   set.seed(124)
   
   #create the data partition of the full trainingset  
   train_id <- createDataPartition(y = Building_2_train[,c(y_names[i])], 
-                                  p = no_rows_partition/nrow(Building_2_train), 
+                                  p = no_rows_partition/nrow(Building_2_train),
                                   list = FALSE)
   
   #use the partition to generate the training set that will be used  

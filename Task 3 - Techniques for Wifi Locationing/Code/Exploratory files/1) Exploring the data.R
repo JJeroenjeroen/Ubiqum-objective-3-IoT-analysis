@@ -1,9 +1,10 @@
 #####################################################
-# Date:      04-03-2019                             #
+# Date:      24-03-2019                             #
 # Author:    Jeroen Meij                            #
 # File:      Wifi localization modeling             #
-# Version:   1.0                                    #    
+# Version:   final                                  #    
 #####################################################
+
 
 
 #This file will contain the data exploration for the UJIIndoorLoc dataset 
@@ -71,6 +72,7 @@ wifi_test$FLOOR <- as.factor(wifi_test$FLOOR)
 #change unix time variable to actual datetime
 wifi_train$DateTime <- anytime(wifi_train$TIMESTAMP)
 wifi_test$DateTime <- anytime(wifi_test$TIMESTAMP)
+
 
 
 

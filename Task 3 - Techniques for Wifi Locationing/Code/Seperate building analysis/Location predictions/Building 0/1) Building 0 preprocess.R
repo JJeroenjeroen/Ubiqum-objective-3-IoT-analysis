@@ -1,9 +1,10 @@
 #####################################################
-# Date:      14-03-2019                             #
+# Date:      24-03-2019                             #
 # Author:    Jeroen Meij                            #
 # File:      Wifi localization modeling             #
-# Version:   2.0                                    #    
+# Version:   final                                  #    
 #####################################################
+
 
 
 #This file will do the preprocsessing for Building 0 
@@ -12,19 +13,29 @@
 setwd("C:/Users/Jeroen/Desktop/Ubiqum/IoT Analytics/Task 3 - Techniques for Wifi Locationing/Code/Seperate building analysis/Location predictions")
 source(file = "Setup.R")
 
+remove(Building_1_train, Building_1_test,
+       Building_2_train, Building_2_test)
+
 #split the trainingB0 in 2 so the independent variables (WAPS) can be adjusted 
-train_B0_yvars <- Building_0_train[c((ncol(Building_0_train)-8):ncol(Building_0_train))]
-train_B0_wapcolumns <- Building_0_train[-c((ncol(Building_0_train)-8):ncol(Building_0_train))]
+train_B0_yvars <- Building_0_train[c((ncol(Building_0_train)-8):
+                                       ncol(Building_0_train))]
+train_B0_wapcolumns <- Building_0_train[-c((ncol(Building_0_train)-8):
+                                             ncol(Building_0_train))]
 
 
 #split the testB0 in 2 so the independent variables (WAPS) can be adjusted 
-test_B0_yvars <- Building_0_test[c((ncol(Building_0_test)-8):ncol(Building_0_test))]
-test_B0_wapcolumns <- Building_0_test[-c((ncol(Building_0_test)-8):ncol(Building_0_test))]
+test_B0_yvars <- Building_0_test[c((ncol(Building_0_test)-8):
+                                     ncol(Building_0_test))]
+test_B0_wapcolumns <- Building_0_test[-c((ncol(Building_0_test)-8):
+                                           ncol(Building_0_test))]
 
 
-#remove rows without variance in both test and training B0 
-train_B0_yvars <- train_B0_yvars[-which(apply(train_B0_wapcolumns, 1, var) == 0), ]
-train_B0_wapcolumns <- train_B0_wapcolumns[-which(apply(train_B0_wapcolumns, 1, var) == 0), ]
+#remove rows without variance in training B0 
+train_B0_yvars <- train_B0_yvars[-which(apply(
+  train_B0_wapcolumns, 1, var) == 0), ]
+
+train_B0_wapcolumns <- train_B0_wapcolumns[-which(apply(
+  train_B0_wapcolumns, 1, var) == 0), ]
 
 
 #change weaks signals to no signal
@@ -36,35 +47,19 @@ train_B0_wapcolumns[train_B0_wapcolumns == 100] <- -100
 test_B0_wapcolumns[test_B0_wapcolumns == 100] <- -100
 
 #change too strong signals to no signal
-train_B0_wapcolumns[train_B0_wapcolumns > -30] <- train_B0_wapcolumns[train_B0_wapcolumns > -30] -30
+train_B0_wapcolumns[train_B0_wapcolumns > -30] <- 
+  train_B0_wapcolumns[train_B0_wapcolumns > -30] -30
 
 
-#remove duplicate values
-train_B0_yvars <- train_B0_yvars[which(!duplicated(train_B0_wapcolumns)),]
-train_B0_wapcolumns <- train_B0_wapcolumns[which(!duplicated(train_B0_wapcolumns)),]
+#remove duplicate rows
+train_B0_yvars <- train_B0_yvars[which
+                                 (!duplicated(train_B0_wapcolumns)),]
+train_B0_wapcolumns <- train_B0_wapcolumns[which
+                                           (!duplicated(train_B0_wapcolumns)),]
 
 #combine dataframe again and remove the seperate parts
 Building_0_train <- bind_cols(train_B0_wapcolumns, train_B0_yvars)
 Building_0_test <- bind_cols(test_B0_wapcolumns, test_B0_yvars)
-
-
-
-#create empty lists that will be used in the loop
-x_list_train <- list()
-y_list_train <- list()
-x_list_test <- list()
-y_list_test <- list()
-
-
-#Here the values for the data partitioning can be entered
-########################################################################
-
-#how big should the data partition be?
-no_rows_partition <- 2000
-
-#which values should be added as a dependent variable?
-y_names <- c("LONGITUDE", "LATITUDE")
-
 
 
 #change class of building and floor to factor
@@ -79,13 +74,37 @@ Building_0_test$FLOOR <- as.factor(Building_0_test$FLOOR)
 Building_0_train$DateTime <- anytime(Building_0_train$TIMESTAMP)
 Building_0_test$DateTime <- anytime(Building_0_test$TIMESTAMP)
 
+#remove Df´s that won´t be used anymore
+remove(wifi_train, wifi_test,
+       test_B0_wapcolumns, test_B0_yvars,
+       train_B0_wapcolumns, train_B0_yvars)
+
+
+#create empty lists that will be used in the loop
+x_list_train <- list()
+y_list_train <- list()
+x_list_test <- list()
+y_list_test <- list()
+
+
+
+#Here the values for the data partitioning can be entered
+########################################################################
+
+#how big should the data partition be?
+no_rows_partition <- 2000
+
+#which values should be added as a dependent variable?
+y_names <- c("LONGITUDE", "LATITUDE")
+
+
 
 #for loop that creates smaller data frames for each data dependent variable
 for (i in 1:length(y_names)){
   set.seed(124)
   
   #create the data partition of the full trainingset  
-  train_id <- createDataPartition(y = Building_0_train[,c(y_names[i])], 
+  train_id <- createDataPartition(y = Building_0_train[,c(y_names[i])],
                                   p = no_rows_partition/nrow(Building_0_train), 
                                   list = FALSE)
   
@@ -104,7 +123,8 @@ for (i in 1:length(y_names)){
          training[ , grepl( "WAP" , names(training))])
   
   
-  
+
+    
   #seperate x and y values for each test dataframe  
   #this makes the df for the dependent variable (x)
   assign("throwaway_x_test",
@@ -112,12 +132,9 @@ for (i in 1:length(y_names)){
   
   
   
-
-  
-  
   #normalize rows in the train & test dataframe 
   throwaway_x_train <- as.data.frame(scale(t(throwaway_x_train)))
-  throwaway_x_test <- as.data.frame(scale(t(throwaway_x_test)))       
+  throwaway_x_test <- as.data.frame(scale(t(throwaway_x_test)))
   throwaway_x_train <- as.data.frame(t(throwaway_x_train))
   throwaway_x_test <- as.data.frame(t(throwaway_x_test))
   
@@ -135,5 +152,4 @@ for (i in 1:length(y_names)){
   remove(training)
   remove(testing)
 }
-
 
